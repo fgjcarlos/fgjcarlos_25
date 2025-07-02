@@ -1,0 +1,33 @@
+---
+import "../styles/global.css";
+import "@fontsource/lxgw-wenkai-mono-tc";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro Basics</title>
+  </head>
+  <body>
+    <main
+      class="container min-h-screen flex flex-col mx-auto max-w-7xl p-6 md:p-8 lg:p-10 shadow-[8px_0_16px_-8px_rgba(0,0,0,0.08),-8px_0_16px_-8px_rgba(0,0,0,0.08)]"
+    >
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    font-family: "LXGW WenKai Mono TC", monospace;
+  }
+</style>

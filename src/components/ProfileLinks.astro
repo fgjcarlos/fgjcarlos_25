@@ -1,0 +1,24 @@
+---
+import { Icon } from "astro-icon/components";
+
+import Links from "@config/links.json";
+
+const { links } = Links;
+---
+
+<div class="grid grid-cols-4 gap-2">
+  {
+    links.map((link) => (
+      <a
+        href={link.src}
+        title={link.title}
+        aria-label={link.title}
+        target="_blank"
+        rel="noopener noreferrer"
+        class=" hover:bg-transparent hover:scale-120 transition-transform duration-100 ease-in-out"
+      >
+        <Icon name={link.icon} class="size-8 text-gray-600 hover:text-gray-800 " />
+      </a>
+    ))
+  }
+</div>

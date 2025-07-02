@@ -1,0 +1,31 @@
+---
+import PhotoProfile from "../assets/photo.webp";
+import { Image } from "astro:assets";
+import ProfileLinks from "./ProfileLinks.astro";
+---
+
+<section
+  class="flex flex-col md:flex-row-reverse gap-8 items-center justify-evenly mt-8"
+>
+  <Image
+    src={PhotoProfile}
+    alt="FGJCARLOS"
+    class="mask mask-squircle size-36 md:size-48"
+  />
+  <div class="flex flex-col items-center md:items-start ">
+    <p class="max-w-2xl flex-1 bloque-con-margin">
+      Soy Carlos Fontán, <span class="italic font-semibold"
+        >desarrollador de software</span
+      > con foco en <span class="italic font-semibold">IoT</span> y <span
+        class="italic font-semibold">automatización industrial</span
+      >. Me especializo en crear soluciones que conectan el mundo físico con el
+      digital, trabajando con tecnologías <span class="italic font-semibold"
+        >web fullstack, Node-RED, Docker</span
+      > y protocolos como <span class="italic font-semibold">OPC-UA</span> y <span
+        class="italic font-semibold">MQTT</span
+      >, entre otros. También desarrollo proyectos personales en los que combino
+      electrónica, visión artificial y desarrollo web.
+    </p>
+    <ProfileLinks />
+  </div>
+</section>

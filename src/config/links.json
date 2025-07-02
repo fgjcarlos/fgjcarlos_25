@@ -1,0 +1,33 @@
+{
+    "links": 
+        [
+            {
+                "type": "website",
+                "icon": "arcticons:emoji-web",
+                "src": "https://fgjcarlos.com",
+                "title": "FGJCARLOS - Portfolio",
+                "description": "Carlos Fontán, desarrollador de software especializado en IoT y desarrollo web."
+            },
+            {
+                "type": "mail",
+                "icon": "arcticons:mail",
+                "src": "mailto:fgjcarlos@gmail.com",
+                "title": "Contacto",
+                "description": "Envíame un correo electrónico a fgjcarlos@gmail.com"
+            },
+            {
+                "type": "github",
+                "icon": "arcticons:github",
+                "src": "https://github.com/fgjcarlos",
+                "title": "GitHub",
+                "description": "Visita mi perfil de GitHub para ver mis proyectos y contribuciones."
+            },
+            {
+                "type": "linkedin",
+                "icon": "arcticons:linkedin",
+                "src": "https://www.linkedin.com/in/fgjcarlos/",
+                "title": "LinkedIn",
+                "description": "Conéctate conmigo en LinkedIn para ver mi experiencia profesional y recomendaciones."
+            }
+        ]
+}
