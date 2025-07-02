@@ -13,6 +13,7 @@
     "@fontsource/lxgw-wenkai-mono-tc": "^5.2.7",
     "@iconify-json/arcticons": "^1.2.29",
     "@tailwindcss/vite": "^4.1.11",
+    "@vercel/speed-insights": "^1.2.0",
     "astro": "^5.10.2",
     "astro-icon": "^1.1.5",
     "daisyui": "^5.0.43",
