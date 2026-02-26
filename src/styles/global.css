@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-
 @plugin "daisyui/theme" {
   name: "light";
   default: false;
@@ -11,9 +10,9 @@
   --color-base-200: oklch(98% 0 0);
   --color-base-300: oklch(95% 0 0);
   --color-base-content: oklch(21% 0.006 285.885);
-  --color-primary: #2A2A2A;
+  --color-primary: #2a2a2a;
   --color-primary-content: oklch(96% 0.001 286.375);
-  --color-secondary: #F3F4F6;
+  --color-secondary: #f3f4f6;
   --color-secondary-content: oklch(13% 0.028 261.692);
   --color-accent: oklch(77% 0.152 181.912);
   --color-accent-content: oklch(38% 0.063 188.416);
@@ -37,9 +36,8 @@
   --noise: 0;
 }
 
-
 @theme {
-  --font-display: 'LXGW WenKai Mono TC', monospace;
+  --font-display: "LXGW WenKai Mono TC", monospace;
 }
 
 *:focus-visible {
@@ -48,6 +46,6 @@
 }
 
 .bloque-con-margin {
-  @apply my-0;              /* Elimina márgenes por defecto si los hay */
-  margin-block: 1lh;        /* Añade el margen vertical relativo a line-height */
+  @apply my-0; /* Elimina márgenes por defecto si los hay */
+  margin-block: 1lh; /* Añade el margen vertical relativo a line-height */
 }

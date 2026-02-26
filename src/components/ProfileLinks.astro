@@ -1,9 +1,10 @@
 ---
 import { Icon } from "astro-icon/components";
+import type { LinksConfig } from "../types/config";
 
 import Links from "@config/links.json";
 
-const { links } = Links;
+const { links } = Links as LinksConfig;
 ---
 
 <div class="grid grid-cols-4 gap-2">
@@ -17,7 +18,10 @@ const { links } = Links;
         rel="noopener noreferrer"
         class=" hover:bg-transparent hover:scale-120 transition-transform duration-100 ease-in-out"
       >
-        <Icon name={link.icon} class="size-8 text-gray-600 hover:text-gray-800 " />
+        <Icon
+          name={link.icon}
+          class="size-8 text-gray-600 hover:text-gray-800 "
+        />
       </a>
     ))
   }

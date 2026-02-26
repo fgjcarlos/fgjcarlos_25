@@ -2,7 +2,10 @@
 import PhotoProfile from "../assets/photo.webp";
 import { Image } from "astro:assets";
 import ProfileLinks from "./ProfileLinks.astro";
+import type { ProfileConfig } from "../types/config";
 import Profile from "@config/profile.json";
+
+const profile = Profile as ProfileConfig;
 ---
 
 <section
@@ -11,19 +14,21 @@ import Profile from "@config/profile.json";
 >
   <Image
     src={PhotoProfile}
-    alt={Profile.photoAlt}
+    alt={profile.photoAlt}
     class="mask mask-squircle size-32 sm:size-36 md:size-48"
   />
   <div class="flex flex-col items-center md:items-start">
     <h2 class="text-lg font-semibold mb-2">Sobre mí</h2>
     <p class="max-w-2xl flex-1 bloque-con-margin">
-      {Profile.bio.map((segment) =>
-        segment.emphasis ? (
-          <span class="italic font-semibold">{segment.text}</span>
-        ) : (
-          segment.text
+      {
+        profile.bio.map((segment) =>
+          segment.emphasis ? (
+            <span class="italic font-semibold">{segment.text}</span>
+          ) : (
+            segment.text
+          ),
         )
-      )}
+      }
     </p>
     <ProfileLinks />
   </div>
