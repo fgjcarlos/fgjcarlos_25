@@ -42,6 +42,11 @@
   --font-display: 'LXGW WenKai Mono TC', monospace;
 }
 
+*:focus-visible {
+  outline: 2px solid oklch(77% 0.152 181.912);
+  outline-offset: 2px;
+}
+
 .bloque-con-margin {
   @apply my-0;              /* Elimina márgenes por defecto si los hay */
   margin-block: 1lh;        /* Añade el margen vertical relativo a line-height */

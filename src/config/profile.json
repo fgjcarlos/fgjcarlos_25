@@ -1,0 +1,21 @@
+{
+  "name": "Carlos Fontán",
+  "brand": "FGJCARLOS",
+  "title": "Desarrollador de Software",
+  "photoAlt": "Foto de Carlos Fontán",
+  "bio": [
+    { "text": "Soy Carlos Fontán, " },
+    { "text": "desarrollador de software", "emphasis": true },
+    { "text": " con foco en " },
+    { "text": "IoT", "emphasis": true },
+    { "text": " y " },
+    { "text": "automatización industrial", "emphasis": true },
+    { "text": ". Me especializo en crear soluciones que conectan el mundo físico con el digital, trabajando con tecnologías " },
+    { "text": "web fullstack, Node-RED, Docker", "emphasis": true },
+    { "text": " y protocolos como " },
+    { "text": "OPC-UA", "emphasis": true },
+    { "text": " y " },
+    { "text": "MQTT", "emphasis": true },
+    { "text": ", entre otros. También desarrollo proyectos personales en los que combino electrónica, visión artificial y desarrollo web." }
+  ]
+}

@@ -1,5 +1,43 @@
-<section class="w-full navbar">
+---
+import { Icon } from "astro-icon/components";
+
+const navLinks = [
+  { href: "#sobre-mi", label: "Sobre mí" },
+];
+---
+
+<nav class="w-full navbar px-0">
   <div class="flex-1">
-    <a href="/" class="text-xl font-bold cursor-pointer">FGJCARLOS</a>
+    <a href="/" class="text-xl font-bold cursor-pointer">
+      <h1>FGJCARLOS</h1>
+    </a>
   </div>
-</section>
+
+  <!-- Desktop -->
+  <ul class="hidden md:flex gap-6">
+    {navLinks.map((link) => (
+      <li>
+        <a href={link.href} class="hover:underline underline-offset-4">
+          {link.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <!-- Mobile hamburger -->
+  <div class="md:hidden dropdown dropdown-end">
+    <label tabindex="0" role="button" class="btn btn-ghost" aria-label="Abrir menú de navegación">
+      <Icon name="arcticons:hamburger-menu" class="size-6" />
+    </label>
+    <ul
+      tabindex="0"
+      class="dropdown-content menu bg-base-100 rounded-box shadow-md w-48 mt-2 z-10"
+    >
+      {navLinks.map((link) => (
+        <li>
+          <a href={link.href}>{link.label}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
