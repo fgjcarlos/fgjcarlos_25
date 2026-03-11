@@ -3,6 +3,8 @@ import { Icon } from "astro-icon/components";
 import LinksData from "../config/links.json";
 
 const links = LinksData.links;
+
+const isExternal = (src: string) => /^https?:\/\//i.test(src);
 ---
 
 <div class="flex gap-4 justify-center md:justify-start mt-4 group">
@@ -10,7 +12,8 @@ const links = LinksData.links;
     links.map((link, index) => (
       <a
         href={link.src}
-        target={link.blank ? "_blank" : "_self"}
+        target={isExternal(link.src) ? "_blank" : "_self"}
+        rel={isExternal(link.src) ? "noopener noreferrer" : undefined}
         class="transform transition-all duration-300 hover:scale-110 hover:-translate-y-1 hover:text-primary text-base-content/60 hover:shadow-md interactive-smooth"
         aria-label={link.title}
         style={`transition-delay: ${index * 100}ms`}
