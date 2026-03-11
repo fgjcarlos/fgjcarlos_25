@@ -3,9 +3,9 @@ import PhotoProfile from "../assets/photo.webp";
 import { Image } from "astro:assets";
 import ProfileLinks from "./ProfileLinks.astro";
 import type { ProfileConfig } from "../types/config";
-import Profile from "@config/profile.json";
+import ProfileJson from "../config/profile.json";
 
-const profile = Profile as ProfileConfig;
+const profile = ProfileJson as ProfileConfig;
 ---
 
 <section
