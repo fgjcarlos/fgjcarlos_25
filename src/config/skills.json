@@ -1,0 +1,29 @@
+{
+  "Industrial OT & Control": [
+    "Programación PLC (Sistemas Automáticos)",
+    "Robótica Industrial",
+    "Protocolos Industriales (OPC-UA, Modbus, MQTT)",
+    "SCADA & HMI",
+    "Sistemas de Regulación y Control"
+  ],
+  "Fullstack IT & Edge": [
+    "Docker & Containerization",
+    "Node.js & Express",
+    "Astro & React",
+    "TypeScript",
+    "PostgreSQL & InfluxDB (Time-series)",
+    "API REST & WebSockets"
+  ],
+  "AI & Vision": [
+    "Computer Vision (OpenCV)",
+    "IA para Gestión de Alimentación",
+    "Procesamiento de Imágenes con Cámaras",
+    "Perfilometría 3D (Robótica)"
+  ],
+  "Specialized Domains": [
+    "Acuicultura Automatizada",
+    "Alimentadores Automáticos",
+    "Integración IT/OT",
+    "Sistemas I+D Industrial"
+  ]
+}
