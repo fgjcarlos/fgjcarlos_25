@@ -37,10 +37,14 @@ const { experience, education } = experienceData as {
             </span>
             <div class="flex flex-col md:flex-row md:justify-between md:items-baseline gap-2 mb-4">
               <h3 class="text-xl font-bold text-primary">{item.title}</h3>
-              <span class="badge badge-outline font-mono text-xs">{item.period}</span>
+              <span class="badge badge-outline font-mono text-xs">
+                {item.period}
+              </span>
             </div>
             <p class="text-lg font-semibold mb-2">{item.company}</p>
-            <p class="text-base-content/80 mb-4 max-w-2xl">{item.description}</p>
+            <p class="text-base-content/80 mb-4 max-w-2xl">
+              {item.description}
+            </p>
             {item.achievements && item.achievements.length > 0 && (
               <ul class="list-disc list-inside space-y-1 text-sm text-base-content/70">
                 {item.achievements.map((achievement) => (
@@ -66,7 +70,9 @@ const { experience, education } = experienceData as {
             <div class="card-body p-6">
               <div class="flex justify-between items-start gap-4 mb-2">
                 <h3 class="text-lg font-bold">{item.title}</h3>
-                <span class="text-xs font-mono opacity-60 shrink-0">{item.period}</span>
+                <span class="text-xs font-mono opacity-60 shrink-0">
+                  {item.period}
+                </span>
               </div>
               <p class="text-primary font-medium text-sm mb-2">{item.school}</p>
               <p class="text-sm text-base-content/70">{item.description}</p>
