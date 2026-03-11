@@ -10,20 +10,24 @@ const profile = Profile as ProfileConfig;
 
 <section
   id="sobre-mi"
-  class="flex flex-col md:flex-row-reverse gap-8 items-center justify-evenly mt-8"
+  class="flex flex-col md:flex-row-reverse gap-8 items-center justify-evenly mt-8 transition-all duration-700 animate-slide-up"
 >
-  <Image
-    src={PhotoProfile}
-    alt={profile.photoAlt}
-    class="mask mask-squircle size-32 sm:size-36 md:size-48"
-  />
-  <div class="flex flex-col items-center md:items-start">
-    <h2 class="text-lg font-semibold mb-2">Sobre mí</h2>
-    <p class="max-w-2xl flex-1 bloque-con-margin">
+  <div class="transform transition-all duration-500 hover:scale-110 hover:shadow-lg group">
+    <Image
+      src={PhotoProfile}
+      alt={profile.photoAlt}
+      class="mask mask-squircle size-32 sm:size-36 md:size-48 transition-all duration-300 group-hover:brightness-110"
+    />
+  </div>
+  <div class="flex flex-col items-center md:items-start transform transition-all duration-500 delay-200 hover:translate-x-2">
+    <h2 class="text-lg font-semibold mb-2 hover:text-primary transition-colors duration-300 cursor-default">
+      Sobre mí
+    </h2>
+    <p class="max-w-2xl flex-1 bloque-con-margin transition-all duration-300 hover:text-base-content/90">
       {
-        profile.bio.map((segment) =>
+        profile.bio.map((segment, index) =>
           segment.emphasis ? (
-            <span class="italic font-semibold">{segment.text}</span>
+            <span class="italic font-semibold hover:text-primary transition-colors duration-200">{segment.text}</span>
           ) : (
             segment.text
           ),
