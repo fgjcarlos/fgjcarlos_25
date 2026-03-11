@@ -1,0 +1,77 @@
+---
+import { getCollection } from "astro:content";
+
+const projects = await getCollection("projects");
+const visible = projects.filter((p) => !p.data.draft);
+---
+
+<section id="proyectos" class="py-12 animate-slide-in-right">
+  <h2 class="text-3xl font-bold mb-8 flex items-center gap-2">
+    <span class="text-primary">#</span> Proyectos
+  </h2>
+
+  {
+    visible.length === 0 ? (
+      <p class="text-base-content/70">
+        No hay proyectos publicados por el momento.
+      </p>
+    ) : (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {visible.map((p) => (
+          <article class="card bg-base-100 border border-base-200 hover:shadow-lg transition-shadow duration-200 hover-lift">
+            <figure class="h-40 bg-base-200 overflow-hidden flex items-center justify-center">
+              {p.data.image ? (
+                <img
+                  src={p.data.image}
+                  alt={p.data.title}
+                  class="object-cover w-full h-full"
+                />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center text-base-content/40">
+                  Imagen no disponible
+                </div>
+              )}
+            </figure>
+            <div class="card-body p-4">
+              <h3 class="text-lg font-semibold mb-2">{p.data.title}</h3>
+              <p class="text-sm text-base-content/80 mb-3">
+                {p.data.description}
+              </p>
+
+              <div class="flex flex-wrap gap-2 mb-3">
+                {(p.data.tags ?? []).map((t: string) => (
+                  <span class="badge badge-outline text-xs">{t}</span>
+                ))}
+              </div>
+
+              <div class="flex items-center gap-3 mt-auto">
+                {p.data.github && (
+                  <a
+                    href={p.data.github}
+                    class="btn btn-ghost btn-sm interactive-smooth"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Ver repositorio de ${p.data.title} en GitHub`}
+                  >
+                    Repositorio
+                  </a>
+                )}
+                {p.data.demo && (
+                  <a
+                    href={p.data.demo}
+                    class="btn btn-primary btn-sm text-white interactive-smooth"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Ver demo de ${p.data.title}`}
+                  >
+                    Ver demo
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    )
+  }
+</section>
