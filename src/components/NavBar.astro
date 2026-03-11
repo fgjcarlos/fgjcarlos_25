@@ -8,9 +8,9 @@ const navLinks = [
 ];
 ---
 
-<nav class="w-full navbar px-0">
+<nav class="w-full navbar px-0 transition-all duration-300">
   <div class="flex-1">
-    <a href="/" class="text-xl font-bold cursor-pointer">
+    <a href="/" class="text-xl font-bold cursor-pointer hover:scale-105 transition-transform duration-200">
       <h1>FGJCARLOS</h1>
     </a>
   </div>
@@ -18,9 +18,9 @@ const navLinks = [
   <!-- Desktop -->
   <ul class="hidden md:flex gap-6">
     {
-      navLinks.map((link) => (
-        <li>
-          <a href={link.href} class="hover:underline underline-offset-4">
+      navLinks.map((link, index) => (
+        <li class="transform transition-all duration-300 hover:scale-105 hover:text-primary">
+          <a href={link.href} class="hover:underline underline-offset-4 transition-all duration-200">
             {link.label}
           </a>
         </li>
@@ -33,19 +33,19 @@ const navLinks = [
     <label
       tabindex="0"
       role="button"
-      class="btn btn-ghost"
+      class="btn btn-ghost transition-all duration-300 hover:scale-110 hover:bg-base-300"
       aria-label="Abrir menú de navegación"
     >
       <Icon name="arcticons:hamburger-menu" class="size-6" />
     </label>
     <ul
       tabindex="0"
-      class="dropdown-content menu bg-base-100 rounded-box shadow-md w-48 mt-2 z-10"
+      class="dropdown-content menu bg-base-100 rounded-box shadow-md w-48 mt-2 transition-all duration-300 opacity-0 invisible group-hover:opacity-100 group-hover:visible"
     >
       {
-        navLinks.map((link) => (
+      navLinks.map((link) => (
           <li>
-            <a href={link.href}>{link.label}</a>
+            <a href={link.href} class="hover:text-primary hover:translate-x-1 transition-all duration-200">{link.label}</a>
           </li>
         ))
       }
