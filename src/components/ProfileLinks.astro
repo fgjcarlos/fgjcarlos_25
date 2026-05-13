@@ -1,19 +1,21 @@
 ---
 import { Icon } from "astro-icon/components";
-import Profile from "@config/profile.json";
-import type { ProfileConfig } from "../types/config";
+import Links from "@config/links.json";
+import type { LinksConfig } from "../types/config";
 
-const profile = Profile as ProfileConfig;
+const profileLinks = (Links as LinksConfig).links;
 ---
 
 <div class="flex gap-4 justify-center md:justify-start mt-4 group">
   {
-    profile.links.map((link, index) => (
+    profileLinks.map((link, index) => (
       <a
-        href={link.href}
-        target={link.blank ? "_blank" : "_self"}
+        href={link.src}
+        target={link.src.startsWith("http") ? "_blank" : "_self"}
+        rel={link.src.startsWith("http") ? "noopener noreferrer" : undefined}
         class="transform transition-all duration-300 hover:scale-110 hover:-translate-y-1 hover:text-primary text-base-content/60 hover:shadow-md"
-        aria-label={link.name}
+        aria-label={link.title}
+        title={link.description}
         style={`transition-delay: ${index * 100}ms`}
       >
         <Icon name={link.icon} class="size-6" />
