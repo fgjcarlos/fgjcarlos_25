@@ -1,0 +1,36 @@
+---
+const focusAreas = [
+  {
+    title: "Software industrial",
+    description:
+      "Aplicaciones web, APIs, WebSockets y dashboards para procesos industriales y operación en campo.",
+  },
+  {
+    title: "Integración IT/OT",
+    description:
+      "Conexión entre máquinas, sensores, bases de datos y sistemas web usando protocolos industriales.",
+  },
+  {
+    title: "IoT, visión y edge",
+    description:
+      "Soluciones con Docker, MQTT, OPC-UA, cámaras, OpenCV y despliegues cercanos al proceso.",
+  },
+];
+---
+
+<section
+  id="areas"
+  class="grid gap-4 md:grid-cols-3 mt-10 animate-fade-in"
+  aria-label="Áreas de trabajo"
+>
+  {
+    focusAreas.map((area) => (
+      <article class="rounded-box border border-base-300 bg-base-100 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <h2 class="text-base font-semibold mb-2">{area.title}</h2>
+        <p class="text-sm leading-relaxed text-base-content/70">
+          {area.description}
+        </p>
+      </article>
+    ))
+  }
+</section>

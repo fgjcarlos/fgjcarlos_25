@@ -1,25 +1,26 @@
 {
   "name": "Carlos Fontán",
   "brand": "FGJCARLOS",
-  "title": "Desarrollador de Software",
+  "title": "Desarrollador Software IT/OT · IoT Industrial · Automatización",
   "photoAlt": "Foto de Carlos Fontán",
   "bio": [
     { "text": "Soy Carlos Fontán, " },
-    { "text": "desarrollador de software", "emphasis": true },
-    { "text": " con foco en " },
-    { "text": "IoT", "emphasis": true },
-    { "text": " y " },
-    { "text": "automatización industrial", "emphasis": true },
     {
-      "text": ". Me especializo en crear soluciones que conectan el mundo físico con el digital, trabajando con tecnologías "
+      "text": "desarrollador software con base técnica en automatización industrial, robótica e integración IT/OT",
+      "emphasis": true
     },
-    { "text": "web fullstack, Node-RED, Docker", "emphasis": true },
-    { "text": " y protocolos como " },
-    { "text": "OPC-UA", "emphasis": true },
-    { "text": " y " },
-    { "text": "MQTT", "emphasis": true },
     {
-      "text": ", entre otros. También desarrollo proyectos personales en los que combino electrónica, visión artificial y desarrollo web."
+      "text": ". Trabajo construyendo soluciones que conectan sistemas físicos con aplicaciones web: "
+    },
+    {
+      "text": "control industrial, IoT, datos en tiempo real",
+      "emphasis": true
+    },
+    { "text": ", visión artificial, APIs, dashboards y despliegues con " },
+    { "text": "Docker", "emphasis": true },
+    { "text": " en entornos de campo. " },
+    {
+      "text": "Mi perfil combina experiencia industrial real con desarrollo fullstack moderno, para entender tanto la máquina, el proceso y los sensores como la arquitectura software que los conecta."
     }
   ]
 }

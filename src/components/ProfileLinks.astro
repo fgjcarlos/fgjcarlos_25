@@ -6,7 +6,10 @@ import type { LinksConfig } from "../types/config";
 const profileLinks = (Links as LinksConfig).links;
 ---
 
-<div class="flex gap-4 justify-center md:justify-start mt-4 group">
+<div
+  id="contacto"
+  class="flex gap-4 justify-center md:justify-start mt-4 group"
+>
   {
     profileLinks.map((link, index) => (
       <a
