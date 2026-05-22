@@ -31,5 +31,6 @@ docs/
 # Local Pi runtime state
 .atl/
 .pi/
+.pi-lens/
 test-results/
 playwright-report/
