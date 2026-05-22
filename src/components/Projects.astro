@@ -1,0 +1,78 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+
+const projects = await getCollection("projects");
+const visible = projects.filter((p) => !p.data.draft);
+---
+
+<section id="proyectos" class="py-12">
+  <h2 class="text-3xl font-bold mb-8 flex items-center gap-2">
+    <span class="text-primary">#</span> Proyectos
+  </h2>
+
+  {
+    visible.length === 0 ? (
+      <p class="text-base-content/70">
+        No hay proyectos publicados por el momento.
+      </p>
+    ) : (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {visible.map((p) => (
+          <article class="card bg-base-100 border border-base-200 hover:shadow-lg transition-shadow duration-200">
+            <figure class="h-40 bg-base-200 overflow-hidden flex items-center justify-center">
+              {p.data.image ? (
+                <Image
+                  src={p.data.image}
+                  alt={p.data.title}
+                  class="object-cover w-full h-full"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center text-base-content/40">
+                  Imagen no disponible
+                </div>
+              )}
+            </figure>
+            <div class="card-body p-4">
+              <h3 class="text-lg font-semibold mb-2">{p.data.title}</h3>
+              <p class="text-sm text-base-content/80 mb-3">
+                {p.data.description}
+              </p>
+
+              <div class="flex flex-wrap gap-2 mb-3">
+                {(p.data.tags ?? []).map((t: string) => (
+                  <span class="badge badge-outline text-xs">{t}</span>
+                ))}
+              </div>
+
+              <div class="flex items-center gap-3 mt-auto">
+                {p.data.github && (
+                  <a
+                    href={p.data.github}
+                    class="btn btn-ghost btn-sm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Repositorio
+                  </a>
+                )}
+                {p.data.demo && (
+                  <a
+                    href={p.data.demo}
+                    class="btn btn-primary btn-sm text-white"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ver demo
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    )
+  }
+</section>
