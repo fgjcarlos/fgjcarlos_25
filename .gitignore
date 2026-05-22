@@ -28,3 +28,6 @@ Thumbs.db
 docs/
 
 .claude/
+# Local Pi runtime state
+.atl/
+.pi/
