@@ -12,13 +12,11 @@ const profile = Profile as ProfileConfig;
   id="sobre-mi"
   class="w-full flex flex-col md:flex-row-reverse gap-8 items-center justify-between mt-8 transition-all duration-700 animate-slide-up"
 >
-  <div
-    class="transform transition-all duration-500 hover:scale-110 hover:shadow-lg group"
-  >
+  <div class="group">
     <Image
       src={PhotoProfile}
       alt={profile.photoAlt}
-      class="mask mask-squircle size-32 sm:size-36 md:size-48 transition-all duration-300 group-hover:brightness-110"
+      class="mask mask-squircle size-32 sm:size-36 md:size-48 transition-all duration-500 hover:scale-110 hover:brightness-110 hover:drop-shadow-xl"
     />
   </div>
   <div class="flex flex-col items-center md:items-start md:flex-1">
