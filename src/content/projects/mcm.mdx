@@ -1,0 +1,60 @@
+---
+title: "MCM — Mosquitto Control Manager"
+description: "Control plane open source para Eclipse Mosquitto. UI web, API REST/WebSocket, RBAC, audit trail y observabilidad en tiempo real — sin reemplazar el broker."
+publishDate: "2025-01-01"
+tags: ["Go", "React", "MQTT", "SQLite", "Docker", "OpenAPI"]
+image: ./mcm-cover.png
+github: "https://github.com/fgjcarlos/mcm"
+demo: "https://fgjcarlos.github.io/mcm/"
+status: "alpha"
+featured: true
+draft: false
+---
+
+## El problema
+
+Mosquitto es ligero, fiable y ampliamente usado en el edge industrial. Pero operar un broker en producción significa editar ficheros de configuración a mano, gestionar ACLs en texto plano, rotar contraseñas sin trazabilidad y montar dashboards por separado. No existe una capa de control oficial.
+
+MCM cubre ese hueco: un plano de control limpio que se conecta al broker existente como cliente, lo configura donde es posible, y da al operador visibilidad, auditabilidad y acceso con mínimo privilegio.
+
+## Qué hace
+
+**Auth y RBAC** — Login con JWT, bcrypt, cuatro roles (`viewer < auditor < operator < admin`) y bloqueo por IP/usuario tras intentos fallidos (429).
+
+**Gestión de ACLs y schemas** — Reglas Mosquitto con validación de wildcards. Validadores JSON Schema enlazados a filtros de topic MQTT.
+
+**Stream en tiempo real** — Cliente paho.mqtt.golang con keepalive y reconexión automática, distribuido por WebSocket autenticado al dashboard React.
+
+**Audit trail** — Cada acción de administración y evento de seguridad persiste en SQLite, expuesto por APIs de solo lectura.
+
+**Observabilidad** — slog estructurado con request IDs, `/metrics` Prometheus con labels acotados, dashboard Grafana de arranque.
+
+**HTTPS / mTLS** — Listener TLS opcional con versión mínima configurable y verificación de certificado cliente.
+
+## Stack
+
+| Capa           | Tecnología                    |
+| -------------- | ----------------------------- |
+| Backend        | Go 1.24, `net/http`, `slog`   |
+| Base de datos  | SQLite (driver pure-Go)       |
+| Mensajería     | Eclipse paho MQTT             |
+| Observabilidad | Prometheus, Grafana           |
+| API            | OpenAPI 3.1                   |
+| Frontend       | React 19, Vite, Tailwind 4    |
+| Ops            | Single binary, Docker Compose |
+
+El binario es estático — sin CGO, sin dependencias de sistema. Cross-compila a Linux amd64/arm64, macOS arm64 y Windows en cada PR.
+
+## CLI
+
+```
+mcm server   — arranca el control plane
+mcm doctor   — valida config y conectividad con el broker
+mcm status   — estado del servidor en ejecución
+mcm backup   — exporta la base de datos
+mcm version  — versión y build info
+```
+
+## Estado actual
+
+MVP feature-complete en fase de hardening. Auth, RBAC, ACL, stream en tiempo real, audit trail, observabilidad y HTTPS están implementados, testeados y ejercitados en cada PR vía CI.

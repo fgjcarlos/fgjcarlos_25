@@ -1,0 +1,126 @@
+---
+import { getCollection, render } from "astro:content";
+import { Image } from "astro:assets";
+import Layout from "@layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects", ({ data }) => !data.draft);
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, description, tags, image, github, demo, status, publishDate } =
+  project.data;
+
+const statusColors: Record<string, string> = {
+  alpha: "badge-warning",
+  beta: "badge-info",
+  stable: "badge-success",
+};
+---
+
+<Layout title={`${title} — FGJCARLOS`} description={description}>
+  <article class="w-full max-w-3xl mx-auto py-10 animate-slide-up">
+    <!-- Back -->
+    <a
+      href="/#proyectos"
+      class="inline-flex items-center gap-1 text-sm text-base-content/50 hover:text-primary transition-colors duration-200 mb-8 group"
+    >
+      <span class="group-hover:-translate-x-1 transition-transform duration-200"
+        >←</span
+      >
+      Proyectos
+    </a>
+
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex flex-wrap items-center gap-3 mb-3">
+        {
+          status && (
+            <span
+              class={`badge badge-outline text-xs uppercase tracking-widest ${statusColors[status] ?? ""}`}
+            >
+              {status}
+            </span>
+          )
+        }
+        <time
+          class="text-xs text-base-content/40"
+          datetime={publishDate.toISOString()}
+        >
+          {publishDate.getFullYear()}
+        </time>
+      </div>
+
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">{title}</h1>
+      <p class="text-base text-base-content/70 mb-5">{description}</p>
+
+      <div class="flex flex-wrap gap-2 mb-5">
+        {tags.map((t) => <span class="badge badge-outline text-xs">{t}</span>)}
+      </div>
+
+      <div class="flex gap-3">
+        {
+          github && (
+            <a
+              href={github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-sm btn-ghost border border-base-300 hover:border-primary transition-colors duration-200"
+            >
+              Repositorio
+            </a>
+          )
+        }
+        {
+          demo && (
+            <a
+              href={demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-sm btn-primary text-white"
+            >
+              Ver demo
+            </a>
+          )
+        }
+      </div>
+    </header>
+
+    <!-- Cover image -->
+    {
+      image && (
+        <div class="rounded-box overflow-hidden border border-base-200 mb-10 shadow-sm">
+          <Image
+            src={image}
+            alt={`Captura de ${title}`}
+            class="w-full object-cover"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      )
+    }
+
+    <!-- MDX body -->
+    <div
+      class="prose prose-sm max-w-none
+      prose-headings:font-bold prose-headings:text-base-content
+      prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-3
+      prose-h3:text-base prose-h3:mt-6 prose-h3:mb-2
+      prose-p:text-base-content/80 prose-p:leading-relaxed
+      prose-a:text-primary prose-a:underline-offset-4 hover:prose-a:text-primary/70
+      prose-code:text-sm prose-code:bg-base-200 prose-code:px-1 prose-code:rounded
+      prose-pre:bg-base-200 prose-pre:border prose-pre:border-base-300 prose-pre:rounded-box
+      prose-table:text-sm prose-th:text-left prose-td:align-top
+      prose-strong:text-base-content
+      prose-li:text-base-content/80"
+    >
+      <Content />
+    </div>
+  </article>
+</Layout>
