@@ -11,6 +11,7 @@
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
     "check": "astro check",
+    "test:e2e": "playwright test",
     "astro": "astro"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.60.0",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.56.1",
     "eslint": "^10.0.2",
