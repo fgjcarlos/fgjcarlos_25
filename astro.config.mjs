@@ -11,9 +11,22 @@ import icon from 'astro-icon';
 export default defineConfig({
   site: 'https://fgjcarlos.com',
 
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'viewport',
+  },
+
   vite: {
     plugins: [tailwindcss()]
   },
 
-  integrations: [mdx(), sitemap(), icon()]
+  integrations: [
+    mdx(),
+    sitemap({
+      changefreq: 'monthly',
+      priority: 0.7,
+      lastmod: new Date(),
+    }),
+    icon(),
+  ],
 });

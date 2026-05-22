@@ -41,7 +41,7 @@ const jsonLd = {
 <html lang="es" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
@@ -71,6 +71,9 @@ const jsonLd = {
       is:inline
       set:html={JSON.stringify(jsonLd)}
     />
+
+    <!-- Per-page head extensions (extra meta, JSON-LD, etc.) -->
+    <slot name="head" />
 
     <SpeedInsights />
     <title>{title}</title>

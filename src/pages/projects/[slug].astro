@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import { Image } from "astro:assets";
 import Layout from "@layouts/Layout.astro";
+import profileData from "@config/profile.json";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects", ({ data }) => !data.draft);
@@ -21,9 +22,36 @@ const statusColors: Record<string, string> = {
   beta: "badge-info",
   stable: "badge-success",
 };
+
+const siteUrl = "https://fgjcarlos.com";
+const projectUrl = `${siteUrl}/projects/${project.id}`;
+
+const projectJsonLd: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  name: title,
+  description,
+  url: projectUrl,
+  dateCreated: publishDate.toISOString(),
+  keywords: tags.join(", "),
+  author: {
+    "@type": "Person",
+    name: profileData.name,
+    url: siteUrl,
+  },
+};
+
+if (github) projectJsonLd.codeRepository = github;
+if (demo) projectJsonLd.workExample = demo;
 ---
 
 <Layout title={`${title} — FGJCARLOS`} description={description}>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(projectJsonLd)}
+  />
   <article class="w-full max-w-3xl mx-auto py-10 animate-slide-up">
     <!-- Back -->
     <a
