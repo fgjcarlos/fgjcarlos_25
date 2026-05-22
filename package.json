@@ -17,7 +17,7 @@
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
     "@astrojs/sitemap": "^3.7.2",
-    "@fontsource/lxgw-wenkai-mono-tc": "^5.2.7",
+    "@fontsource/lxgw-wenkai-mono-tc": "^5.2.9",
     "@iconify-json/arcticons": "^1.2.29",
     "@tailwindcss/vite": "^4.1.11",
     "@vercel/speed-insights": "^1.2.0",
