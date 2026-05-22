@@ -1,0 +1,56 @@
+---
+title: "NRCC — Node-RED Control Center"
+description: "Control plane local-first para Node-RED. Binario único en Go con dashboard React embebido. Gestión de proceso, configuración, backups y observabilidad sin reemplazar el runtime."
+publishDate: "2026-04-06"
+tags: ["Go", "React", "TypeScript", "Node-RED", "Docker", "Systemd"]
+image: ./nrcc-cover.png
+github: "https://github.com/fgjcarlos/nrcc"
+demo: "https://fgjcarlos.github.io/nrcc/"
+status: "stable"
+featured: true
+draft: false
+---
+
+## El problema
+
+Node-RED es la herramienta de referencia para automatización visual e IoT en el edge — flexible, fiable y con una comunidad enorme. Pero operarlo en producción significa SSH a la máquina, editar `settings.js` a mano, gestionar paquetes npm desde terminal, scripts ad-hoc para backups y tail manual de logs. No existe una capa de control oficial.
+
+NRCC cubre ese hueco: un plano de control local-first que se ejecuta junto a Node-RED, lo supervisa como servicio y expone una UI con toda la operación diaria — sin tocar el core del runtime.
+
+## Qué hace
+
+**Auth y RBAC** — Login JWT con bcrypt, roles `admin` y `viewer`, y guards que previenen lockout accidental del administrador.
+
+**Gestión de proceso y configuración** — Supervisa Node-RED como servicio (start, stop, restart, status). Edita `settings.js` y variables de entorno con validación. Gestión de paquetes npm desde la UI.
+
+**Backups con integridad** — Backups manuales y programados con cron, verificación de integridad sobre cada artefacto, política de retención configurable y snapshots de seguridad pre-restore.
+
+**Observabilidad** — Métricas de sistema (CPU, memoria, disco, uptime) en vivo, streaming de logs vía SSE con filtros, e inspección de flows para análisis estructural.
+
+**Deploy local-first** — Binario único cross-compilado (Linux amd64/arm64, macOS, Windows), instalador automático de servicio systemd y soporte Docker multi-arch. Sin dependencias externas.
+
+## Stack
+
+| Capa           | Tecnología                   |
+| -------------- | ---------------------------- |
+| Backend        | Go 1.25, Chi router, JWT     |
+| Almacenamiento | JSON con file locking        |
+| Frontend       | React 19, TypeScript, Vite   |
+| Streaming      | Server-Sent Events           |
+| Empaquetado    | Frontend embebido en binario |
+| Ops            | systemd, Docker              |
+
+Arquitectura **feature-folder** en el frontend, dashboard servido directamente desde el binario Go — un solo artefacto desplegable.
+
+## CLI
+
+```
+nrcc install              — instala como servicio del sistema
+nrcc portless install     — habilita URLs HTTPS locales sobre LAN
+nrcc portless quick-setup — registra aliases y arranca el proxy
+nrcc uninstall [--purge]  — desinstala servicio y datos
+```
+
+## Estado actual
+
+Feature-complete con guía de despliegue en producción, checklist operacional y workflows de release configurados. En fase de hardening previo a la primera release etiquetada.
