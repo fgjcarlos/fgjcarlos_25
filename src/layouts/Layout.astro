@@ -72,6 +72,9 @@ const jsonLd = {
       set:html={JSON.stringify(jsonLd)}
     />
 
+    <!-- Per-page head extensions (extra meta, JSON-LD, etc.) -->
+    <slot name="head" />
+
     <SpeedInsights />
     <title>{title}</title>
   </head>
