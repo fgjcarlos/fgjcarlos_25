@@ -15,20 +15,20 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.0",
+    "@astrojs/mdx": "^5.0.6",
     "@astrojs/sitemap": "^3.7.2",
     "@fontsource/lxgw-wenkai-mono-tc": "^5.2.7",
     "@iconify-json/arcticons": "^1.2.29",
     "@tailwindcss/vite": "^4.1.11",
     "@vercel/speed-insights": "^1.2.0",
-    "astro": "^5.10.2",
+    "astro": "^6.3.7",
     "astro-icon": "^1.1.5",
     "daisyui": "^5.0.43",
     "sharp": "^0.34.2",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.6",
+    "@astrojs/check": "^0.9.9",
     "@axe-core/playwright": "^4.11.3",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
