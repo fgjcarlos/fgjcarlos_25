@@ -4,6 +4,8 @@ import Footer from "@components/Footer.astro";
 import "../styles/global.css";
 import "@fontsource/lxgw-wenkai-mono-tc";
 import SpeedInsights from "@vercel/speed-insights/astro";
+import profileData from "../config/profile.json";
+import linksData from "../config/links.json";
 
 interface Props {
   title?: string;
@@ -14,6 +16,23 @@ const {
   title = "Carlos Fontán - Desarrollador Software IT/OT | IoT Industrial & Automatización",
   description = "Desarrollador software especializado en integración IT/OT, IoT industrial, automatización, aplicaciones web, Docker, OPC-UA, MQTT y visión artificial.",
 } = Astro.props;
+
+const siteUrl = "https://fgjcarlos.com";
+const ogImage = `${siteUrl}/og-image.png`;
+
+// Build sameAs array from links (skip mailto)
+const sameAs = linksData.links
+  .filter((l) => !l.src.startsWith("mailto:"))
+  .map((l) => l.src);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profileData.name,
+  url: siteUrl,
+  jobTitle: profileData.title,
+  sameAs,
+};
 ---
 
 <!doctype html>
@@ -30,11 +49,23 @@ const {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- JSON-LD Person schema -->
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(jsonLd)}
+    />
 
     <SpeedInsights />
     <title>{title}</title>
