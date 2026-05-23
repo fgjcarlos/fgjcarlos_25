@@ -41,9 +41,33 @@
   --font-display: "LXGW WenKai Mono TC", monospace;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+[id] {
+  scroll-margin-top: 5rem;
+}
+
 *:focus-visible {
   outline: 2px solid oklch(77% 0.152 181.912);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .bloque-con-margin {
