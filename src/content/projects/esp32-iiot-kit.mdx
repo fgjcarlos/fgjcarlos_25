@@ -1,0 +1,41 @@
+---
+title: "ESP32-IIoT-Kit"
+description: "Plataforma de monitorización inteligente para piscifactorías con ESP32. Proyecto educativo con ESP-IDF, ESP-NOW, MQTT y dashboard embebido en Preact."
+publishDate: "2025-05-01"
+tags: ["ESP32", "C", "ESP-IDF", "ESP-NOW", "MQTT", "Preact"]
+github: "https://github.com/fgjcarlos/ESP32-IIoT-Kit"
+demo: "https://fgjcarlos.github.io/ESP32-IIoT-Kit/"
+status: "alpha"
+featured: false
+draft: false
+---
+
+## El problema
+
+Monitorizar sensores en una piscifactoría implica desplegar nodos en entornos húmedos, con alimentación limitada y conectividad irregular. Las soluciones comerciales son cajas negras caras, y las alternativas DIY suelen ser prototipos frágiles sin arquitectura clara.
+
+ESP32-IIoT-Kit aborda esto como proyecto educativo: un sistema genérico de monitorización industrial con un ejemplo concreto de acuicultura en `examples/fish-farm/`, pensado para aprender ESP-IDF, comunicaciones inalámbricas y desarrollo de interfaces embebidas.
+
+## Qué hace
+
+**Arquitectura hub-and-spoke** — Un gateway central (ESP32-S3) coordina nodos sensores (ESP32-C3) mediante ESP-NOW. El gateway levanta un punto de acceso WiFi con dashboard embebido y API REST local.
+
+**Nodos de bajo consumo** — Los sensores se diseñan con deep sleep y ciclos de wake optimizados para funcionar con batería. Se comunican por ESP-NOW sin necesidad de infraestructura WiFi.
+
+**Dashboard embebido** — Interfaz Preact + Vite servida desde SPIFFS en el propio gateway. Visualización en tiempo real accesible desde cualquier dispositivo conectado al AP.
+
+**Conectividad opcional a cloud** — MQTT como puente hacia servidores externos. El sistema funciona offline por defecto y sincroniza cuando hay conexión disponible.
+
+## Stack
+
+| Capa           | Tecnología                       |
+| -------------- | -------------------------------- |
+| Firmware       | C con ESP-IDF v5.x              |
+| Comunicación   | ESP-NOW, WiFi, MQTT (opcional)   |
+| Frontend       | Preact, Vite (embebido en SPIFFS)|
+| Backend (opc.) | Bun, TypeScript, SQLite          |
+| Hardware       | ESP32-S3 (gateway), ESP32-C3 (nodos) |
+
+## Estado actual
+
+Proyecto educativo en desarrollo activo, organizado en 6 fases (~25 semanas). Cubre desde la implementación del gateway y mesh ESP-NOW hasta integración de sensores, dashboard, seguridad y OTA.
