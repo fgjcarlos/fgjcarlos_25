@@ -35,18 +35,16 @@ const navLinks = [
   </ul>
 
   <!-- Mobile hamburger -->
-  <div class="md:hidden dropdown dropdown-end">
-    <label
-      tabindex="0"
+  <details data-mobile-nav-menu class="md:hidden dropdown dropdown-end">
+    <summary
       role="button"
-      class="btn btn-ghost transition-all duration-300 hover:scale-110 hover:bg-base-300"
+      class="btn btn-ghost list-none transition-all duration-300 hover:scale-110 hover:bg-base-300"
       aria-label="Abrir menú de navegación"
     >
       <Icon name="arcticons:hamburger-menu" class="size-6" />
-    </label>
+    </summary>
     <ul
-      tabindex="0"
-      class="dropdown-content menu bg-base-100 rounded-box shadow-md w-48 mt-2 transition-all duration-300 opacity-0 invisible group-hover:opacity-100 group-hover:visible"
+      class="dropdown-content menu z-50 mt-2 w-48 rounded-box bg-base-100 shadow-md"
     >
       {
         navLinks.map((link) => (
@@ -61,5 +59,30 @@ const navLinks = [
         ))
       }
     </ul>
-  </div>
+  </details>
 </nav>
+
+<script>
+  const closeMobileNavOnLinkClick = () => {
+    const menu = document.querySelector("[data-mobile-nav-menu]");
+
+    if (
+      !(menu instanceof HTMLDetailsElement) ||
+      menu.dataset.closeHandlerAttached
+    ) {
+      return;
+    }
+
+    menu.dataset.closeHandlerAttached = "true";
+    menu.addEventListener("click", (event) => {
+      const target = event.target;
+
+      if (target instanceof Element && target.closest("a")) {
+        menu.open = false;
+      }
+    });
+  };
+
+  closeMobileNavOnLinkClick();
+  document.addEventListener("astro:page-load", closeMobileNavOnLinkClick);
+</script>

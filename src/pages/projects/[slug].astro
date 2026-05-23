@@ -52,7 +52,11 @@ if (demo) projectJsonLd.workExample = demo;
     is:inline
     set:html={JSON.stringify(projectJsonLd)}
   />
-  <article class="w-full max-w-3xl mx-auto py-10 animate-slide-up">
+  <article
+    data-page-content
+    transition:animate="fade"
+    class="w-full max-w-3xl mx-auto py-10"
+  >
     <!-- Back -->
     <a
       href="/#proyectos"
@@ -122,11 +126,14 @@ if (demo) projectJsonLd.workExample = demo;
     <!-- Cover image -->
     {
       image && (
-        <div class="rounded-box overflow-hidden border border-base-200 mb-10 shadow-sm">
+        <div
+          data-project-cover
+          class="aspect-video rounded-box overflow-hidden border border-base-200 mb-10 shadow-sm bg-base-200"
+        >
           <Image
             src={image}
             alt={`Captura de ${title}`}
-            class="w-full object-cover"
+            class="w-full h-full object-cover"
             loading="eager"
             decoding="async"
           />

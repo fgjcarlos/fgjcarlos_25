@@ -1,0 +1,57 @@
+---
+title: "LGB — Logix Gateway Bridge"
+description: "Gateway bidireccional open source entre PLCs Rockwell ControlLogix/CompactLogix y estándares IIoT abiertos: OPC UA y MQTT Sparkplug B."
+publishDate: "2026-05-23"
+tags: ["Go", "React", "OPC UA", "MQTT", "Sparkplug B", "Rockwell"]
+image: ./lgb-cover.png
+github: "https://github.com/fgjcarlos/lgb"
+demo: "https://fgjcarlos.github.io/lgb/"
+status: "alpha"
+featured: true
+draft: false
+---
+
+## El problema
+
+Integrar PLCs Rockwell con plataformas IIoT modernas suele implicar gateways comerciales caros — Kepware, Cogent DataHub, Ignition — o stacks frágiles basados en Node-RED y scripts ad-hoc. El resultado es dependencia de proveedor, operación difícil y poca trazabilidad en entornos donde el control debe seguir siendo robusto.
+
+LGB cubre ese hueco: un gateway open source que traduce el mundo propietario Allen-Bradley/CIP hacia estándares abiertos como OPC UA y MQTT Sparkplug B.
+
+## Qué hace
+
+**Comunicación CIP nativa** — Conecta con PLCs ControlLogix y CompactLogix vía EtherNet/IP usando `gologix`, con lecturas y escrituras de tags pensadas para entornos industriales.
+
+**OPC UA y Sparkplug B bidireccionales** — Expone tags PLC como variables OPC UA y métricas Sparkplug B, y acepta escrituras desde ambos protocolos cuando el tag está autorizado explícitamente.
+
+**ACLs por tag y audit trail** — Cada tag define si es escribible. Las escrituras y acciones administrativas quedan registradas para trazabilidad, debugging y cumplimiento.
+
+**UI de operación** — Interfaz web para gestionar conexiones PLC, editar mapeos de tags, revisar diagnósticos y operar backups sin depender de SSH como herramienta principal.
+
+**Edge-first** — Binario Go sin CGO, despliegue Docker-first y builds para Linux, Windows, macOS y ARM/Raspberry Pi.
+
+## Stack
+
+| Capa              | Tecnología                            |
+| ----------------- | ------------------------------------- |
+| Backend           | Go 1.24, `net/http`, `slog`           |
+| PLC               | EtherNet/IP / CIP con `gologix`       |
+| Interoperabilidad | OPC UA, MQTT Sparkplug B              |
+| Base de datos     | SQLite pure-Go (`modernc.org/sqlite`) |
+| Frontend          | React 19, Vite, Tailwind 4            |
+| Ops               | Docker Compose, single binary         |
+
+La arquitectura mantiene el PLC como fuente de control. LGB actúa como capa de integración, observabilidad y operación: lee, escribe bajo permisos explícitos y traduce hacia protocolos abiertos.
+
+## CLI y operación prevista
+
+```sh
+lgb server   — arranca el gateway
+lgb doctor   — valida configuración y conectividad
+lgb version  — muestra versión y build info
+```
+
+El stack de desarrollo arranca gateway, simulador PLC y broker MQTT con Docker Compose para validar el flujo completo desde el primer hito técnico.
+
+## Estado actual
+
+Pre-MVP en desarrollo activo. El objetivo de la primera versión usable es soportar hasta ~10 PLCs ControlLogix/CompactLogix en una instancia, con OPC UA, Sparkplug B, mapeo visual de tags, ACLs de escritura, audit trail, histórico local y backups integrados.
