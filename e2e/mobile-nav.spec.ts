@@ -23,6 +23,8 @@ test.describe("Mobile navigation", () => {
 
     await menu.getByRole("link", { name: "Proyectos" }).click();
     await expect(page).toHaveURL(/#proyectos$/);
+    await expect(menu).toBeHidden();
+    await expect(page.locator("nav details")).not.toHaveAttribute("open", "");
   });
 
   test("hamburger button exposes the menu to keyboard focus", async ({

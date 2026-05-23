@@ -35,7 +35,7 @@ const navLinks = [
   </ul>
 
   <!-- Mobile hamburger -->
-  <details class="md:hidden dropdown dropdown-end">
+  <details data-mobile-nav-menu class="md:hidden dropdown dropdown-end">
     <summary
       role="button"
       class="btn btn-ghost list-none transition-all duration-300 hover:scale-110 hover:bg-base-300"
@@ -61,3 +61,28 @@ const navLinks = [
     </ul>
   </details>
 </nav>
+
+<script>
+  const closeMobileNavOnLinkClick = () => {
+    const menu = document.querySelector("[data-mobile-nav-menu]");
+
+    if (
+      !(menu instanceof HTMLDetailsElement) ||
+      menu.dataset.closeHandlerAttached
+    ) {
+      return;
+    }
+
+    menu.dataset.closeHandlerAttached = "true";
+    menu.addEventListener("click", (event) => {
+      const target = event.target;
+
+      if (target instanceof Element && target.closest("a")) {
+        menu.open = false;
+      }
+    });
+  };
+
+  closeMobileNavOnLinkClick();
+  document.addEventListener("astro:page-load", closeMobileNavOnLinkClick);
+</script>
