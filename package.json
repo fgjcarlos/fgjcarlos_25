@@ -21,7 +21,7 @@
     "@iconify-json/arcticons": "^1.2.29",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.0",
-    "@vercel/speed-insights": "^1.2.0",
+    "@vercel/speed-insights": "^2.0.0",
     "astro": "^6.3.7",
     "astro-icon": "^1.1.5",
     "daisyui": "^5.5.23",
