@@ -19,14 +19,14 @@
     "@astrojs/sitemap": "^3.7.2",
     "@fontsource/lxgw-wenkai-mono-tc": "^5.2.7",
     "@iconify-json/arcticons": "^1.2.29",
-    "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.1.11",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.0",
     "@vercel/speed-insights": "^1.2.0",
     "astro": "^6.3.7",
     "astro-icon": "^1.1.5",
-    "daisyui": "^5.0.43",
+    "daisyui": "^5.5.23",
     "sharp": "^0.34.2",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
