@@ -9,8 +9,10 @@
       "text": "desarrollador software con base técnica en automatización industrial, robótica e integración IT/OT",
       "emphasis": true
     },
+    { "text": ". " },
     {
-      "text": ". Trabajo construyendo soluciones que conectan sistemas físicos con aplicaciones web: "
+      "text": "Trabajo construyendo soluciones que conectan sistemas físicos con aplicaciones web: ",
+      "paragraphBreakBefore": true
     },
     {
       "text": "control industrial, IoT, datos en tiempo real",
@@ -20,7 +22,8 @@
     { "text": "Docker", "emphasis": true },
     { "text": " en entornos de campo. " },
     {
-      "text": "Mi perfil combina experiencia industrial real con desarrollo fullstack moderno, para entender tanto la máquina, el proceso y los sensores como la arquitectura software que los conecta."
+      "text": "Mi perfil combina experiencia industrial real con desarrollo fullstack moderno, para entender tanto la máquina, el proceso y los sensores como la arquitectura software que los conecta.",
+      "paragraphBreakBefore": true
     }
   ]
 }

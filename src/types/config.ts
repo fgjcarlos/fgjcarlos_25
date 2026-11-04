@@ -13,6 +13,11 @@ export interface LinksConfig {
 export interface BioSegment {
   text: string;
   emphasis?: boolean;
+  /**
+   * Optional. When true, the segment starts a new paragraph of the biography.
+   * Absent (the default) keeps every segment in the same paragraph.
+   */
+  paragraphBreakBefore?: boolean;
 }
 
 export interface ProfileConfig {
