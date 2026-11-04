@@ -8,3 +8,8 @@ onlyBuiltDependencies:
   - "@vercel/speed-insights"
   - esbuild
   - sharp
+
+# vite 8.3.x ships a rolldown resolve plugin that breaks @tailwindcss/vite 4.3.1
+# (Missing field `tsconfigPaths`). 8.2.2 is the version that passed CI in PR #80.
+overrides:
+  vite: 8.2.2
