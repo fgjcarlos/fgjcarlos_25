@@ -2,10 +2,24 @@
 import PhotoProfile from "../assets/photo.webp";
 import { Image } from "astro:assets";
 import ProfileLinks from "./ProfileLinks.astro";
-import type { ProfileConfig } from "../types/config";
+import type { BioSegment, ProfileConfig } from "../types/config";
 import Profile from "@config/profile.json";
 
 const profile = Profile as ProfileConfig;
+
+// A segment flagged with `paragraphBreakBefore` starts a new paragraph. Without
+// the flag every segment stays in the same paragraph, so a biography without
+// markers renders exactly as one single paragraph.
+const bioParagraphs: BioSegment[][] = [];
+for (const segment of profile.bio) {
+  if (segment.paragraphBreakBefore && bioParagraphs.length > 0) {
+    bioParagraphs.push([segment]);
+  } else if (bioParagraphs.length > 0) {
+    bioParagraphs[bioParagraphs.length - 1].push(segment);
+  } else {
+    bioParagraphs.push([segment]);
+  }
+}
 ---
 
 <section
@@ -33,19 +47,24 @@ const profile = Profile as ProfileConfig;
     >
       Sobre mí
     </h2>
-    <p class="max-w-2xl flex-1 bloque-con-margin">
+    <div class="bio-texto max-w-2xl flex-1">
       {
-        profile.bio.map((segment) =>
-          segment.emphasis ? (
-            <span class="italic font-semibold hover:text-primary transition-colors duration-200">
-              {segment.text}
-            </span>
-          ) : (
-            segment.text
-          ),
-        )
+        bioParagraphs.map((paragraph) => (
+          <p class="bloque-con-margin">
+            {paragraph.map((segment) =>
+              segment.emphasis ? (
+                <span
+                  class="italic font-semibold hover:text-primary transition-colors duration-200"
+                  set:text={segment.text}
+                />
+              ) : (
+                segment.text
+              ),
+            )}
+          </p>
+        ))
       }
-    </p>
+    </div>
     <ProfileLinks />
   </div>
 </section>

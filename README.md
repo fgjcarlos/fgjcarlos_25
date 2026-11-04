@@ -42,18 +42,37 @@ public/              favicon, og-image, robots.txt
 
 Cada proyecto es un `.mdx` en `src/content/projects/` con frontmatter validado por Zod:
 
-| Campo         | Tipo                                | Obligatorio |
-| ------------- | ----------------------------------- | ----------- |
-| `title`       | `string`                            | sí          |
-| `description` | `string`                            | sí          |
-| `publishDate` | `date`                              | sí          |
-| `tags`        | `string[]`                          | sí          |
-| `image`       | `image()`                           | no          |
-| `github`      | `url`                               | no          |
-| `demo`        | `url`                               | no          |
-| `status`      | `"alpha" \| "beta" \| "stable"`     | no          |
-| `featured`    | `boolean` (default `false`)         | no          |
-| `draft`       | `boolean` (default `false`)         | no          |
+| Campo         | Tipo                            | Obligatorio |
+| ------------- | ------------------------------- | ----------- |
+| `title`       | `string`                        | sí          |
+| `description` | `string`                        | sí          |
+| `publishDate` | `date`                          | sí          |
+| `tags`        | `string[]`                      | sí          |
+| `image`       | `image()`                       | no          |
+| `github`      | `url`                           | no          |
+| `demo`        | `url`                           | no          |
+| `status`      | `"alpha" \| "beta" \| "stable"` | no          |
+| `featured`    | `boolean` (default `false`)     | no          |
+| `draft`       | `boolean` (default `false`)     | no          |
+
+### Biografía en `src/config/profile.json`
+
+La biografía es una lista de segmentos que se renderizan como un párrafo. Cada
+segmento acepta `text` y, de forma opcional, `emphasis` para marcar texto en
+cursiva.
+
+El campo opcional `paragraphBreakBefore` abre un párrafo nuevo antes del
+segmento:
+
+```json
+{
+  "text": "Este segmento empieza un párrafo nuevo.",
+  "paragraphBreakBefore": true
+}
+```
+
+Si el campo no aparece, el segmento se mantiene en el párrafo anterior: una
+biografía sin marcadores se sigue mostrando como un único párrafo.
 
 ## Comandos
 
