@@ -13,9 +13,9 @@ const visible = projects
   });
 
 const statusColors: Record<string, string> = {
-  alpha: "badge-warning",
-  beta: "badge-info",
-  stable: "badge-success",
+  alpha: "badge-warning text-warning-content",
+  beta: "badge-info text-info-content",
+  stable: "badge-success text-success-content",
 };
 ---
 
@@ -86,7 +86,7 @@ const statusColors: Record<string, string> = {
               <div class="flex items-center gap-2 pt-2 border-t border-base-200 mt-1">
                 <a
                   href={`/projects/${p.id}`}
-                  class="text-xs text-base-content/50 hover:text-primary transition-colors duration-200"
+                  class="text-xs text-base-content/70 hover:text-primary transition-colors duration-200"
                 >
                   Ver detalle →
                 </a>
