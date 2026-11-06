@@ -52,7 +52,7 @@ const PROJECTS = [
   },
   {
     title: "NRCC — Node-RED Control Center",
-    status: "stable",
+    status: "beta",
     description:
       "Plano de control local-first para Node-RED: centraliza configuración, backups y supervisión sin reemplazar el runtime.",
     repo: "https://github.com/fgjcarlos/nrcc",

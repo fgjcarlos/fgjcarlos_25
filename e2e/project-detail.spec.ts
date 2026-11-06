@@ -199,6 +199,20 @@ function normalize(text: string): string {
     .toLowerCase();
 }
 
+test("NRCC project status is beta and its status copy reflects that", async ({
+  page,
+}) => {
+  await openProject(page, "nrcc");
+
+  await expect(page.locator("header > div .badge").first()).toHaveText("beta");
+  await expect(
+    page.getByRole("heading", { name: "Estado actual" }).locator("+ p"),
+  ).toContainText("Beta");
+  await expect(
+    page.getByRole("heading", { name: "Estado actual" }).locator("+ p"),
+  ).toContainText("primera release estable etiquetada");
+});
+
 test.describe("Project detail: Stack table", () => {
   test.use({ viewport: DESKTOP });
 
