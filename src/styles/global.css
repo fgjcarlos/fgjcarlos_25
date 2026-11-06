@@ -70,6 +70,59 @@ html {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Article body (src/pages/projects/[slug].astro).
+
+   The typography plugin paints EVERY `code` element with a chip surface —
+   including the one nested in `pre` — and styles `pre` with the dark DaisyUI
+   neutral surface. The `prose-pre:` / `prose-code:` variant utilities cannot
+   beat those rules deterministically, so the article wrapper gets explicit
+   rules here. This file is not inside a cascade layer, so these declarations
+   win over the plugin layers.
+--------------------------------------------------------------------------- */
+.prose pre {
+  background-color: var(--color-base-200);
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  color: var(--color-base-content);
+}
+
+.prose pre code {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* The scroll container added around every markdown table (astro.config.mjs). */
+.prose-table-scroll {
+  overflow-x: auto;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.prose thead th {
+  background-color: var(--color-base-200);
+  color: var(--color-base-content);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-base-300);
+}
+
+.prose td {
+  vertical-align: top;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-base-200);
+}
+
 .bloque-con-margin {
   @apply my-0; /* Elimina márgenes por defecto si los hay */
   margin-block: 1lh; /* Añade el margen vertical relativo a line-height */
