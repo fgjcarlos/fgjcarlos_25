@@ -1,10 +1,36 @@
 ---
+import { Icon } from "astro-icon/components";
+import Links from "@config/links.json";
+import type { LinksConfig } from "../types/config";
+
+const profileLinks = (Links as LinksConfig).links;
+
 const currentYear = new Date().getFullYear();
 ---
 
 <footer
-  class="mt-auto pt-8 pb-4 text-center text-sm text-base-content/70 transition-all duration-500 animate-fade-in"
+  id="contacto"
+  class="mt-auto pt-10 pb-6 text-center text-sm text-base-content/70 transition-all duration-500 animate-fade-in"
 >
+  <ul class="flex flex-wrap items-center justify-center gap-6 mb-4">
+    {
+      profileLinks.map((link) => (
+        <li>
+          <a
+            href={link.src}
+            target={link.src.startsWith("http") ? "_blank" : undefined}
+            rel={link.src.startsWith("http") ? "noopener noreferrer" : undefined}
+            aria-label={link.title}
+            title={link.description}
+            class="inline-flex items-center gap-2 transition-colors duration-200 hover:text-primary"
+          >
+            <Icon name={link.icon} class="size-4" />
+            <span>{link.title}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
   <p class="hover:text-base-content transition-colors duration-200">
     &copy; {currentYear} FGJCARLOS
   </p>

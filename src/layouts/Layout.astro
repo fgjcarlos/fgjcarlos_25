@@ -41,6 +41,20 @@ const jsonLd = {
 <html lang="es" data-theme="light">
   <head>
     <meta charset="UTF-8" />
+    <script is:inline>
+      // Anti-FOUC: aplica el tema guardado antes del primer pintado.
+      // Por defecto claro; "js" habilita el reveal de tarjetas (fallback visible sin JS).
+      (() => {
+        let stored = null;
+        try {
+          stored = localStorage.getItem("theme");
+        } catch {
+          /* localStorage bloqueado: se queda en claro */
+        }
+        document.documentElement.dataset.theme = stored === "dark" ? "dark" : "light";
+        document.documentElement.classList.add("js");
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
@@ -96,7 +110,7 @@ const jsonLd = {
     margin: 0;
     width: 100%;
     height: 100%;
-    background-color: #ffffff;
+    background-color: var(--color-base-100);
     font-family: "LXGW WenKai Mono TC", monospace;
   }
 </style>

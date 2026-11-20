@@ -18,9 +18,9 @@ const { title, description, tags, image, github, demo, status, publishDate } =
   project.data;
 
 const statusColors: Record<string, string> = {
-  alpha: "badge-warning",
-  beta: "badge-info",
-  stable: "badge-success",
+  alpha: "badge-warning text-warning-content",
+  beta: "badge-info text-info-content",
+  stable: "badge-success text-success-content",
 };
 
 const siteUrl = "https://fgjcarlos.com";
@@ -60,7 +60,7 @@ if (demo) projectJsonLd.workExample = demo;
     <!-- Back -->
     <a
       href="/#proyectos"
-      class="inline-flex items-center gap-1 text-sm text-base-content/50 hover:text-primary transition-colors duration-200 mb-8 group"
+      class="inline-flex items-center gap-1 text-sm text-base-content/70 hover:text-primary transition-colors duration-200 mb-8 group"
     >
       <span class="group-hover:-translate-x-1 transition-transform duration-200"
         >←</span
@@ -81,7 +81,7 @@ if (demo) projectJsonLd.workExample = demo;
           )
         }
         <time
-          class="text-xs text-base-content/40"
+          class="text-xs text-base-content/60"
           datetime={publishDate.toISOString()}
         >
           {publishDate.getFullYear()}
