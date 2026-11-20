@@ -30,7 +30,7 @@ const PROJECTS = [
     title: "ESP32-IIoT-Kit",
     status: "alpha",
     description:
-      "Proyecto educativo de monitorización en piscifactorías: nodos por ESP-NOW y dashboard embebido, con conectividad irregular y alimentación limitada.",
+      "Plataforma educativa de monitorización industrial con ESP32: nodos por ESP-NOW, gateway autónomo con dashboard embebido y MQTT/Sparkplug B opcionales.",
     repo: "https://github.com/fgjcarlos/ESP32-IIoT-Kit",
     demo: "https://fgjcarlos.github.io/ESP32-IIoT-Kit/",
   },
@@ -38,7 +38,7 @@ const PROJECTS = [
     title: "LGB — Logix Gateway Bridge",
     status: "alpha",
     description:
-      "Gateway open source que conecta PLCs Rockwell con OPC UA y MQTT Sparkplug B, dejando el control en el PLC.",
+      "Gateway open source bidireccional entre PLCs ControlLogix/CompactLogix (Rockwell) y OPC UA / MQTT Sparkplug B, dejando el control en el PLC.",
     repo: "https://github.com/fgjcarlos/lgb",
     demo: "https://fgjcarlos.github.io/lgb/",
   },
@@ -46,15 +46,15 @@ const PROJECTS = [
     title: "MCM — Mosquitto Control Manager",
     status: "alpha",
     description:
-      "Plano de control open source para Mosquitto: centraliza configuración, permisos y trazabilidad sin reemplazar el broker.",
+      "Plano de control open source para Mosquitto: gestiona usuarios, ACLs, listeners y TLS con MFA y audit trail, sin reemplazar el broker.",
     repo: "https://github.com/fgjcarlos/mcm",
     demo: "https://fgjcarlos.github.io/mcm/",
   },
   {
-    title: "NRCC — Node-RED Control Center",
+    title: "NRCC — Node-RED 5 Control Center",
     status: "beta",
     description:
-      "Plano de control local-first para Node-RED: centraliza configuración, backups y supervisión sin reemplazar el runtime.",
+      "Plano de control visual para una instancia Node-RED 5: edita settings.js con diff, validación, backup y rollback transaccional.",
     repo: "https://github.com/fgjcarlos/nrcc",
     demo: "https://fgjcarlos.github.io/nrcc/",
   },

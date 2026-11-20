@@ -210,7 +210,7 @@ test("NRCC project status is beta and its status copy reflects that", async ({
   ).toContainText("Beta");
   await expect(
     page.getByRole("heading", { name: "Estado actual" }).locator("+ p"),
-  ).toContainText("primera release estable etiquetada");
+  ).toContainText("tag releases");
 });
 
 test.describe("Project detail: Stack table", () => {

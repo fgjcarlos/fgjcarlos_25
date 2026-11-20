@@ -1,8 +1,8 @@
 ---
 title: "ESP32-IIoT-Kit"
-description: "Proyecto educativo de monitorización en piscifactorías: nodos por ESP-NOW y dashboard embebido, con conectividad irregular y alimentación limitada."
+description: "Plataforma educativa de monitorización industrial con ESP32: nodos por ESP-NOW, gateway autónomo con dashboard embebido y MQTT/Sparkplug B opcionales."
 publishDate: "2025-05-01"
-tags: ["ESP32", "C", "ESP-IDF", "ESP-NOW", "MQTT", "Preact"]
+tags: ["ESP32", "C", "ESP-IDF", "ESP-NOW", "MQTT", "Sparkplug B", "Preact"]
 image: ./esp32-iiot-kit-cover.png
 github: "https://github.com/fgjcarlos/ESP32-IIoT-Kit"
 demo: "https://fgjcarlos.github.io/ESP32-IIoT-Kit/"
@@ -25,14 +25,16 @@ ESP32-IIoT-Kit aborda esto como proyecto educativo: un sistema genérico de moni
 
 **Dashboard embebido** — Interfaz Preact + Vite servida desde SPIFFS en el propio gateway. Visualización en tiempo real accesible desde cualquier dispositivo conectado al AP.
 
-**Conectividad opcional a cloud** — MQTT como puente hacia servidores externos. El sistema funciona offline por defecto y sincroniza cuando hay conexión disponible.
+**Conectividad opcional a cloud** — MQTT plano o modo Edge Node MQTT Sparkplug B v3.0.0 como puente hacia servidores externos. El sistema funciona offline por defecto y sincroniza cuando hay conexión disponible.
+
+**OTA firmado** — Actualizaciones over-the-air con manifiesto firmado y rollback automático en el gateway.
 
 ## Stack
 
 | Capa           | Tecnología                           |
 | -------------- | ------------------------------------ |
 | Firmware       | C con ESP-IDF v5.x                   |
-| Comunicación   | ESP-NOW, WiFi, MQTT (opcional)       |
+| Comunicación   | ESP-NOW, WiFi, MQTT/Sparkplug B (opcional) |
 | Frontend       | Preact, Vite (embebido en SPIFFS)    |
 | Backend (opc.) | Bun, TypeScript, SQLite              |
 | Hardware       | ESP32-S3 (gateway), ESP32-C3 (nodos) |

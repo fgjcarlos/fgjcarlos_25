@@ -1,6 +1,6 @@
 ---
 title: "LGB — Logix Gateway Bridge"
-description: "Gateway open source que conecta PLCs Rockwell con OPC UA y MQTT Sparkplug B, dejando el control en el PLC."
+description: "Gateway open source bidireccional entre PLCs ControlLogix/CompactLogix (Rockwell) y OPC UA / MQTT Sparkplug B, dejando el control en el PLC."
 publishDate: "2026-05-23"
 tags: ["Go", "React", "OPC UA", "MQTT", "Sparkplug B", "Rockwell"]
 image: ./lgb-cover.png
@@ -26,6 +26,8 @@ LGB cubre ese hueco: un gateway open source que traduce el mundo propietario All
 **ACLs por tag y audit trail** — Cada tag define si es escribible. Las escrituras y acciones administrativas quedan registradas para trazabilidad, debugging y cumplimiento.
 
 **UI de operación** — Interfaz web para gestionar conexiones PLC, editar mapeos de tags, revisar diagnósticos y operar backups sin depender de SSH como herramienta principal.
+
+**Historian local y backups** — Histórico con retención configurable y sistema de backups integrado con rotación, programación y repositorios remotos vía restic.
 
 **Edge-first** — Binario Go sin CGO, despliegue Docker-first y builds para Linux, Windows, macOS y ARM/Raspberry Pi.
 
