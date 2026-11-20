@@ -6,13 +6,6 @@ test.describe("Smoke: Home page", () => {
     await expect(page).toHaveTitle(/Carlos Fontán/);
   });
 
-  test("profile image renders", async ({ page }) => {
-    await page.goto("/");
-    const img = page.locator('img[alt*="Carlos"]');
-    await expect(img).toBeVisible();
-    await expect(img).toHaveAttribute("src", /.+/);
-  });
-
   test("social links have valid href and open in new tab", async ({ page }) => {
     await page.goto("/");
     const socialLinks = page.locator('a[target="_blank"][rel*="noopener"]');

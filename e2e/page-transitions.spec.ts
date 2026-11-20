@@ -1,4 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+/**
+ * Activates the first project link from the keyboard. The home stacks sticky
+ * panels and its links follow the pointer, so a keyboard activation is the
+ * stable user path to the detail page.
+ */
+async function openFirstProject(page: Page): Promise<void> {
+  const link = page.locator('#proyectos a[href^="/projects/"]').first();
+  await link.focus();
+  await page.keyboard.press("Enter");
+}
 
 test.describe("Page transitions", () => {
   test("keeps the shared shell stable when navigating between home and project detail", async ({
@@ -14,7 +25,7 @@ test.describe("Page transitions", () => {
     expect(beforeShellBox).not.toBeNull();
     expect(beforeNavBox).not.toBeNull();
 
-    await page.locator('#proyectos a[href^="/projects/"]').first().click();
+    await openFirstProject(page);
     await page.waitForURL(/\/projects\//);
 
     const afterShellBox = await shell.boundingBox();
@@ -31,7 +42,7 @@ test.describe("Page transitions", () => {
     page,
   }) => {
     await page.goto("/");
-    await page.locator('#proyectos a[href^="/projects/"]').first().click();
+    await openFirstProject(page);
     await page.waitForURL(/\/projects\//);
 
     const detailContent = page.locator("article").first();
@@ -44,7 +55,7 @@ test.describe("Page transitions", () => {
     page,
   }) => {
     await page.goto("/");
-    await page.locator('#proyectos a[href^="/projects/"]').first().click();
+    await openFirstProject(page);
     await page.waitForURL(/\/projects\//);
 
     const cover = page.locator("article > div.rounded-box").first();

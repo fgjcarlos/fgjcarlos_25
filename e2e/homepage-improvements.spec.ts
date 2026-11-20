@@ -35,7 +35,7 @@ async function openHome(page: Page): Promise<void> {
 /**
  * Scans the home page for WCAG 2 AA text contrast violations and reports the
  * ones that fall on the nodes flagged by the accessibility review: the project
- * status labels, the muted "Ver detalle" link, the profile brand eyebrow and
+ * status labels, the "ver caso completo" link, the profile brand eyebrow and
  * the footer text.
  */
 async function scanContrastViolations(page: Page) {
@@ -68,7 +68,7 @@ async function scanContrastViolations(page: Page) {
       ) {
         return "project status label";
       }
-      if (text.startsWith("ver detalle")) return "project detail link";
+      if (text.startsWith("ver caso completo")) return "project detail link";
       if (text === "fgjcarlos" && element.closest("#sobre-mi")) {
         return "profile brand eyebrow";
       }

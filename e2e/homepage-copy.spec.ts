@@ -3,28 +3,6 @@ import { expect, test, type Page } from "@playwright/test";
 const HOME = "/";
 
 const PROFILE_NAME = "Carlos Fontán";
-const PROFILE_TITLE =
-  "Desarrollador Software IT/OT · IoT Industrial · Automatización";
-const PHOTO_ALT = "Foto de Carlos Fontán";
-
-/**
- * Biography copy as it must be rendered: one scannable opening paragraph
- * followed by two short supporting paragraphs. Every sentence keeps the facts
- * of the previous single-paragraph biography.
- */
-const BIO_PARAGRAPHS = [
-  "Soy Carlos Fontán, desarrollador software con base técnica en automatización industrial, robótica e integración IT/OT.",
-  "Trabajo construyendo soluciones que conectan sistemas físicos con aplicaciones web: control industrial, IoT, datos en tiempo real, visión artificial, APIs, dashboards y despliegues con Docker en entornos de campo.",
-  "Mi perfil combina experiencia industrial real con desarrollo fullstack moderno, para entender tanto la máquina, el proceso y los sensores como la arquitectura software que los conecta.",
-];
-
-/** Emphasised spans keep the exact wording and order of the previous copy. */
-const BIO_EMPHASIS = [
-  "desarrollador software con base técnica en automatización industrial, robótica e integración IT/OT",
-  "control industrial, IoT, datos en tiempo real",
-  "Docker",
-];
-
 const PROJECTS = [
   {
     title: "ESP32-IIoT-Kit",
@@ -76,43 +54,94 @@ function normalize(value: string | null): string {
   return (value ?? "").replace(/\s+/g, " ").trim();
 }
 
-test.describe("Home: biography readability", () => {
-  test("splits the biography into an opening and two supporting paragraphs", async ({
+test.describe("Home: cine-scroll direction 05", () => {
+  test("opens with a text-only hero: the name, no photo and no biography", async ({
     page,
   }) => {
     await openHome(page);
 
-    const paragraphs = page.locator("#sobre-mi .bio-texto > p");
+    await expect(page.locator("#sobre-mi h1")).toHaveText(PROFILE_NAME);
+    await expect(page.locator("#sobre-mi img")).toHaveCount(0);
+    await expect(page.locator(".bio-texto")).toHaveCount(0);
+  });
 
-    await expect(paragraphs).toHaveCount(3);
+  test("stacks the hero and every project as sticky full-screen panels on desktop", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openHome(page);
 
-    for (const [index, expected] of BIO_PARAGRAPHS.entries()) {
-      const text = normalize(await paragraphs.nth(index).textContent());
+    const panels = page.locator("[data-fx-panel]");
 
-      expect(text, `bio paragraph ${index + 1}`).toBe(expected);
+    await expect(panels).toHaveCount(PROJECTS.length + 1);
+
+    for (let index = 0; index < PROJECTS.length + 1; index++) {
+      const style = await panels.nth(index).evaluate((element) => {
+        const computed = getComputedStyle(element);
+
+        return {
+          position: computed.position,
+          top: computed.top,
+          height: element.getBoundingClientRect().height,
+        };
+      });
+
+      expect(style.position, `panel ${index + 1} position`).toBe("sticky");
+      expect(style.top, `panel ${index + 1} top`).toBe("0px");
+      expect(style.height, `panel ${index + 1} height`).toBe(900);
     }
   });
 
-  test("keeps the emphasised spans and the profile identity untouched", async ({
+  test("keeps a keyboard-focused project link uncovered by the stacked panels", async ({
     page,
   }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await openHome(page);
 
-    const emphasis = page.locator("#sobre-mi .bio-texto span.italic");
+    const link = page
+      .locator("#proyectos article")
+      .nth(2)
+      .getByRole("link")
+      .first();
 
-    await expect(emphasis).toHaveCount(BIO_EMPHASIS.length);
+    await link.focus();
 
-    for (const [index, expected] of BIO_EMPHASIS.entries()) {
-      const text = normalize(await emphasis.nth(index).textContent());
+    const uncovered = await link.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      const hit = document.elementFromPoint(
+        box.x + box.width / 2,
+        box.y + box.height / 2,
+      );
 
-      expect(text, `emphasis ${index + 1}`).toBe(expected);
-    }
+      return hit !== null && element.contains(hit);
+    });
 
-    await expect(page.locator("#sobre-mi h1")).toHaveText(PROFILE_NAME);
-    await expect(page.locator("#sobre-mi > div > p")).toHaveText(PROFILE_TITLE);
-    await expect(page.locator(`#sobre-mi img[alt="${PHOTO_ALT}"]`)).toHaveCount(
-      1,
-    );
+    expect(uncovered).toBe(true);
+  });
+
+  test("lets panels scroll normally on narrow screens", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openHome(page);
+
+    const position = await page
+      .locator("[data-fx-panel]")
+      .first()
+      .evaluate((element) => getComputedStyle(element).position);
+
+    expect(position).not.toBe("sticky");
+  });
+
+  test("links each project to its full case study first", async ({ page }) => {
+    await openHome(page);
+
+    const firstLink = page
+      .locator("#proyectos article")
+      .first()
+      .getByRole("link")
+      .first();
+
+    await expect(firstLink).toHaveText(/ver caso completo/);
+    await expect(firstLink).toHaveAttribute("href", /^\/projects\//);
   });
 });
 
@@ -162,7 +191,7 @@ test.describe("Home: project summaries", () => {
         `status of ${project.title}`,
       ).toHaveCount(1);
 
-      const repo = card.getByRole("link", { name: "Repo" });
+      const repo = card.getByRole("link", { name: "código" });
       const demo = card.getByRole("link", { name: "Demo" });
 
       await expect(repo, `repo link of ${project.title}`).toHaveAttribute(
