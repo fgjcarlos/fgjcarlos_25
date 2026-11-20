@@ -1,0 +1,76 @@
+{
+  "title": "Portfolio FGJCARLOS — rediseño",
+  "brief": "Nueva UI para el portfolio: tema claro/oscuro, animaciones y 3–5 planteamientos estructurales alternativos. Tanda 2 (05–08): más vida visual, más modernidad, estructuras rotas del clásico hero+lista. Elegida la dirección 05, refinada (05) y expandida con páginas de proyecto (09–10).",
+  "artboards": [
+    {
+      "file": "01-terminal-telemetry.html",
+      "title": "Consola de telemetría",
+      "tradeoff": "Voz de sala de control, muy técnica y memorable; densa para visitantes no técnicos",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "02-editorial-index.html",
+      "title": "Índice editorial",
+      "tradeoff": "Lectura y jerarquía serenas, contenido primero; señala menos la vena de ingeniería",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "03-bento-control-room.html",
+      "title": "Bento sala de control",
+      "tradeoff": "Panorama completo de un vistazo, moderno; exige contención para no saturar",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "04-sidecar-casework.html",
+      "title": "Sidecar de casos",
+      "tradeoff": "Narrativa por casos, foco profundo y riel de contacto siempre visible; menos escaneable de un golpe y exige trabajo en pantallas angostas",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "05-cine-scroll.html",
+      "title": "Cine de scroll ★ elegida",
+      "tradeoff": "Cada proyecto es una pantalla que se apila al scrollear (escala+dim del panel cubierto, parallax, blur-reveals, enlaces magnéticos) con dock de 4 paletas intercambiables y copiar-como-prompt; pesado para buscar algo rápido",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "06-pop-brutal.html",
+      "title": "Pop brutal",
+      "tradeoff": "Tipografía display enorme, marquees y blob que sigue el cursor: energía y personalidad; ruidoso para gustos sobrios",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "07-aurora-glass.html",
+      "title": "Aurora glass",
+      "tradeoff": "Aurora de gradientes, glassmorphism y glow estilo lanzamiento de producto: moderno y pulido; estética muy usada en 2025–26",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "08-galeria-horizontal.html",
+      "title": "Galería horizontal",
+      "tradeoff": "Exposición de salas con arte generativo por proyecto, navegación con flechas y puntos: experiencia de museo; el scroll horizontal divide opiniones",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "09-proyecto-lgb.html",
+      "title": "Caso · LGB",
+      "tradeoff": "Página de proyecto en el lenguaje del 05: hero sticky que el artículo cubre, TOC, features glass, stack y prev/next; acento teal por proyecto",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "10-proyecto-nrcc.html",
+      "title": "Caso · NRCC",
+      "tradeoff": "Misma plantilla con acento violeta y flujo diff→validación→snapshot→apply→rollback; muestra el sistema de color por proyecto",
+      "width": 1440,
+      "height": 900
+    }
+  ]
+}
