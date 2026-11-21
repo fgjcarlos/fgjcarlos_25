@@ -3,14 +3,37 @@ import { expect, test, type Page } from "@playwright/test";
 const HOME = "/";
 
 /**
- * Abre la home con las animaciones de entrada resueltas: el reveal por
- * IntersectionObserver deja el contenido visible y las imágenes lazy cargan
- * al entrar en pantalla.
+ * Abre la home con la página ya asentada: las fuentes cargadas, las
+ * imágenes decodificadas y las animaciones de entrada terminadas.
+ *
+ * El ancho del documento se mide sobre ese estado: medir mientras la fuente
+ * de display aún no ha cambiado o mientras una imagen lazy se decodifica
+ * devuelve una maqueta que no es la final (fue el origen de un fallo
+ * intermitente de "la captura no desborda").
  */
 async function openHome(page: Page): Promise<void> {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(HOME);
+  await settle(page);
+}
+
+/** Espera a que la página se asiente del todo. */
+async function settle(page: Page): Promise<void> {
   await page.evaluate(() => document.fonts.ready);
+  await page.waitForLoadState("networkidle");
+  await page.evaluate(async () => {
+    await Promise.all(
+      document
+        .getAnimations()
+        .filter(
+          (animation) => animation.effect?.getTiming().iterations !== Infinity,
+        )
+        .map((animation) => animation.finished.catch(() => undefined)),
+    );
+    // Un ciclo de estilo: el navegador puede leer medidas antes de aplicar
+    // el último cambio de maquetación.
+    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+  });
 }
 
 test.describe("Home: capturas de la UI real de cada proyecto", () => {

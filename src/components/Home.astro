@@ -249,9 +249,10 @@ const otherLinks = contactLinks.filter(
   <section
     id="contacto"
     class="cine-panel cine-contact"
-    aria-label="Contacto"
+    aria-labelledby="titulo-contacto"
     data-fx-panel
   >
+    <h2 id="titulo-contacto" class="sr-only">Contacto</h2>
     <p class="cine-contact-lead" data-fx-reveal>
       Escríbeme por email o por mis redes.
     </p>
@@ -302,7 +303,10 @@ const otherLinks = contactLinks.filter(
             }
           }
         },
-        { threshold: 0.2 },
+        // Basta con que el elemento entre en pantalla. Un umbral del 20 %
+        // nunca se alcanza en un bloque más alto que la ventana (más de cinco
+        // pantallas), que se quedaría invisible para siempre.
+        { threshold: 0, rootMargin: "0px 0px -10% 0px" },
       );
       revealables.forEach((el) => io.observe(el));
     }
@@ -568,13 +572,28 @@ const otherLinks = contactLinks.filter(
     color: var(--color-base-100);
   }
 
+  /* Pulsación: el botón sólido baja un píxel, como una tecla. */
+  .cine-action-primary:active {
+    transform: translateY(1px);
+  }
+
   .cine-action-mail {
-    border-bottom: 1.5px solid var(--fx-ink-accent);
-    padding-bottom: 0.2rem;
+    text-decoration: underline;
+    text-decoration-color: var(--fx-ink-accent);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.25em;
+    transition:
+      color 0.2s ease,
+      text-decoration-thickness 0.2s ease;
   }
 
   .cine-action-mail:hover {
     color: var(--fx-ink-accent);
+  }
+
+  .cine-action-mail:active {
+    color: var(--fx-ink-accent);
+    text-decoration-thickness: 2.5px;
   }
 
   .cine-hint {
@@ -619,7 +638,9 @@ const otherLinks = contactLinks.filter(
     margin: 1.25rem 0 0;
     padding: 0;
     list-style: none;
-    max-width: 72ch;
+    /* Las tres áreas ocupan la banda del panel: a 1440 quedaban tres
+       columnas estrechas con media pantalla vacía a la derecha. */
+    max-width: min(100%, 68rem);
   }
 
   @media (min-width: 768px) {
@@ -766,32 +787,56 @@ const otherLinks = contactLinks.filter(
     font-size: 0.875rem;
   }
 
-  .cine-links a {
+  .cine-links a:not(.cine-caso) {
     display: inline-block;
-    border-bottom: 1.5px solid var(--fx-ink-accent);
-    padding-bottom: 0.2rem;
-    transition: color 0.2s ease;
+    /* Alto táctil de 44px sin agrandar el texto: la línea crece, el
+       subrayado se queda pegado a las letras. */
+    line-height: 44px;
+    min-width: 44px;
+    text-decoration: underline;
+    text-decoration-color: var(--fx-ink-accent);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.25em;
+    transition:
+      color 0.2s ease,
+      text-decoration-thickness 0.2s ease;
   }
 
-  .cine-links a:hover {
+  .cine-links a:not(.cine-caso):hover {
     color: var(--fx-ink-accent);
   }
 
+  .cine-links a:not(.cine-caso):active {
+    color: var(--fx-ink-accent);
+    text-decoration-thickness: 2.5px;
+  }
+
   .cine-links a.cine-caso {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     border: 1px solid
       color-mix(in oklch, var(--fx-ink-accent) 55%, var(--color-base-300));
     border-radius: 9999px;
     padding: 0.6rem 1.25rem;
+    text-decoration: none;
     box-shadow: none;
   }
 
+  /* En oscuro la CTA no lleva halo: la profundidad es una sombra con
+     desplazamiento y desenfoque (craft floor: sin halo de color). */
   :global([data-theme="dark"]) .cine-links a.cine-caso {
-    box-shadow: 0 0 44px oklch(var(--fx-l) 0.14 var(--fx-h1) / 0.3);
+    box-shadow: 0 12px 26px -18px oklch(var(--fx-l) 0.14 var(--fx-h1) / 0.28);
   }
 
   .cine-links a.cine-caso:hover {
     color: var(--color-base-content);
     border-color: var(--fx-ink-accent);
+  }
+
+  .cine-links a.cine-caso:active {
+    border-color: var(--fx-ink-accent);
+    transform: translateY(1px);
   }
 
   /* --- Contacto ---------------------------------------------------------- */
@@ -837,6 +882,10 @@ const otherLinks = contactLinks.filter(
   }
 
   .cine-contact-links a:hover {
+    color: var(--fx-ink-accent);
+  }
+
+  .cine-contact-links a:active {
     color: var(--fx-ink-accent);
   }
 

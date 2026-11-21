@@ -44,11 +44,20 @@ for (const theme of ["light", "dark"] as const) {
     await page.goto("/");
 
     await page.keyboard.press("Tab");
-    const ring = await page.evaluate(
-      () => getComputedStyle(document.activeElement!).outlineColor,
-    );
 
-    expect(await contrast(page, ring, background)).toBeGreaterThanOrEqual(3);
+    // El primer foco tras cargar la página puede leer el anillo del
+    // navegador antes de que el autor aplique el suyo: se mide cuando el
+    // estilo ha aterrizado.
+    const ratio = async () => {
+      const ring = await page.evaluate(
+        () => getComputedStyle(document.activeElement!).outlineColor,
+      );
+      return contrast(page, ring, background);
+    };
+
+    await expect
+      .poll(ratio, { message: "anillo de foco visible" })
+      .toBeGreaterThanOrEqual(3);
   });
 }
 
@@ -117,5 +126,36 @@ test("keeps the dark theme project screenshots", async ({ page }) => {
     expect(
       await shot.evaluate((el) => (el as HTMLImageElement).naturalWidth),
     ).toBeGreaterThan(0);
+  }
+});
+
+// S7: en oscuro el CTA de cada panel no lleva halo de color sin
+// desplazamiento: la profundidad es una sombra con offset y desenfoque.
+test("keeps the dark CTA without a zero-offset halo", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => localStorage.setItem("theme", "dark"));
+  await page.goto("/");
+
+  const cta = page.locator("a.cine-caso").first();
+  await expect(cta).toBeVisible();
+
+  const shadow = await cta.evaluate(
+    (element) => getComputedStyle(element).boxShadow,
+  );
+
+  const shadows = [
+    ...shadow.matchAll(/(-?[\d.]+)px\s+(-?[\d.]+)px\s+(-?[\d.]+)px/g),
+  ];
+
+  if (shadow !== "none") {
+    expect(shadows.length, `sombras de la CTA: ${shadow}`).toBeGreaterThan(0);
+  }
+
+  for (const [, x, y, blur] of shadows) {
+    expect(
+      Number(x) === 0 && Number(y) === 0,
+      `una sombra sin desplazamiento es decoración: ${shadow}`,
+    ).toBe(false);
+    expect(Number(blur), "la sombra lleva desenfoque").toBeGreaterThan(0);
   }
 });

@@ -181,6 +181,27 @@ test.describe("Hero and contact panel in both themes", () => {
 });
 
 test.describe("Contact panel", () => {
+  test("exposes a heading for the contact panel", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openHome(page);
+
+    // El panel se nombra con un encabezado: la navegación por encabezados
+    // lo encuentra aunque el título no se vea en pantalla.
+    const heading = page.locator("#contacto").getByRole("heading", {
+      level: 2,
+      name: "Contacto",
+    });
+    await expect(heading).toHaveCount(1);
+
+    // Oculto a la vista, pero presente en el árbol de accesibilidad.
+    const box = await heading.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.width).toBeLessThanOrEqual(2);
+    expect(box!.height).toBeLessThanOrEqual(2);
+
+    await expect(page.locator("#contacto")).toHaveAccessibleName("Contacto");
+  });
+
   test("lands the nav Contacto on the panel at the top of the viewport", async ({
     page,
   }) => {

@@ -19,7 +19,7 @@ Respuestas del usuario: prioridad «Modo claro + foco», modo claro «Luz técni
 - **T3** [S4] — delegated (`gentle-ai-worker`, Context backstop); done; RED 7/8 fallos → GREEN 10/10, suite 80/80, lint/check exit 0, detector []; commit: feat(home): hero actions and contact panel.
 - **T4** [S5] — delegated (`gentle-ai-worker`, Context backstop); done; RED 8/8 fallos → GREEN 8/8, suite 88/88, lint/check exit 0, detector []; commit: feat(home): about panel, project anchors and clearer navigation.
 - **T5** [S6] — delegated (`gentle-ai-worker`, Context backstop); done; RED 7 aserciones → GREEN 11/11, suite 99/99 ×4, lint/check/build exit 0, detector []; commit: feat(type): Archivo display face, visible gradient and calmer measures.
-- **T6** [S7] — delegated (`gentle-ai-worker`, Context backstop); in progress.
+- **T6** [S7] — delegated (`gentle-ai-worker`, Context backstop); done; RED 8+3 → GREEN, suite 111/111 ×2, project-shots ×20 60/60, lint/check/build exit 0, detector []; commit: feat(a11y): skip link, touch targets and final polish.
 
 ## Log
 
@@ -31,3 +31,4 @@ Respuestas del usuario: prioridad «Modo claro + foco», modo claro «Luz técni
 - L6: T3 hecho. Rol del hero = `profile.json` title; chip `.cine-badge` eliminado (ban craft-floor); `#contacto` pasa del footer al panel final y el nav usa `/#contacto`. Aserciones cambiadas: homepage-copy cuenta de paneles +1→+2 (panel de contacto); light-theme lista de glows sin `.cine-dot` (eliminado). Rama N=0 sin cobertura e2e.
 - L7: T4 hecho. Decisión del padre: en vez de elegir un único "destacado" (decisión de contenido), la home deja de mostrar "destacado" (`featured` intacto) y muestra el año; orden por `publishDate` desc: LGB 2026, NRCC 2026, ESP32 2025, MCM 2025. "Sobre mí" usa el primer párrafo de la bio y las 3 focusAreas verbatim; la tercera dice "IoT, visión y edge" (OpenCV, cámaras): pendiente de confirmar con el usuario por L3. Aserciones cambiadas: homepage-copy (`#sobre-mi h1`→`.cine-hero h1`, paneles +2→+3), hero-contact (`#sobre-mi`→`.cine-hero`), anchor-scroll (Sobre mí ya no es scrollY 0).
 - L8: T5 hecho. Display = Archivo variable (OFL, latin, 34 KB, self-hosted en `public/fonts/`, fallback con size-adjust 98.6 %). Prosa del detalle a 70ch. Un fallo aislado no reproducido (1 de 5 corridas) en `project-shots` "no desborda en móvil" (scrollWidth +5): revisar en T6. El h1 del detalle sigue en mono; el panel de contacto no tiene heading.
+- L9: T6 hecho. El fallo aislado de T5 no se reprodujo; el test ahora mide con la página asentada (umbral intacto). Dejado a propósito: glow de la barra de progreso, tamaño de los enlaces del nav de escritorio y del pie. Feature cerrada; sin push.

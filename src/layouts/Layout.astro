@@ -123,15 +123,49 @@ const jsonLd = {
   </head>
   <body>
     <!--
+      Skip link: el primer elemento enfocable de la página. Aparece al
+      recibir el foco y lleva el foco (y el scroll) al contenido.
+    -->
+    <a class="skip-link" href="#main" data-skip-link>Saltar al contenido</a>
+    <!--
       Shell a sangre: el <main> ocupa todo el ancho del viewport y cada
       página mantiene su propia columna legible dentro. La barra de
       navegación es fija y flota sobre el contenido.
     -->
-    <main transition:animate="fade" class="min-h-screen flex flex-col w-full">
+    <main
+      id="main"
+      tabindex="-1"
+      aria-label="Contenido principal"
+      transition:animate="fade"
+      class="min-h-screen flex flex-col w-full"
+    >
       <NavBar />
       <slot />
       <Footer />
     </main>
+
+    <script>
+      // El skip link salta al contenido: <main> lleva `tabindex="-1"` para
+      // poder recibir el foco. El oyente vive en `document` y busca el
+      // enlace en cada clic, así que sobrevive a los swaps del router.
+      if (!document.documentElement.dataset.skipLinkBound) {
+        document.documentElement.dataset.skipLinkBound = "true";
+
+        document.addEventListener("click", (event) => {
+          const link = (event.target as Element | null)?.closest?.(
+            "[data-skip-link]",
+          );
+          if (!link) return;
+
+          const main = document.getElementById("main");
+          if (!main) return;
+
+          event.preventDefault();
+          main.focus({ preventScroll: true });
+          main.scrollIntoView({ behavior: "instant", block: "start" });
+        });
+      }
+    </script>
   </body>
 </html>
 
@@ -143,5 +177,29 @@ const jsonLd = {
     height: 100%;
     background-color: var(--color-base-100);
     font-family: "LXGW WenKai Mono TC", monospace;
+  }
+
+  /* Skip link: oculto hasta que recibe el foco. Va por encima de la barra
+     flotante, así que al enfocarse se lee sobre ella. */
+  .skip-link {
+    position: fixed;
+    top: 1rem;
+    left: 1.5rem;
+    z-index: 100;
+    padding: 0.7rem 1.2rem;
+    border-radius: 9999px;
+    background: var(--fx-ink-accent);
+    color: var(--color-base-100);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    /* Recortado, pero enfocable: el enlace no sale del flujo. */
+    clip-path: inset(50%);
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    clip-path: inset(0);
   }
 </style>
