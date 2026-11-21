@@ -16,8 +16,8 @@ Respuestas del usuario: prioridad «Modo claro + foco», modo claro «Luz técni
 
 - **T1** [S1,S2] — delegated (`gentle-ai-worker`, Context backstop); done; RED real (anillo claro 1.87, gradiente 3.42, papel 1.017) → GREEN 6/6, suite 67/67, lint/check exit 0, oscuro sin cambios de píxeles; commit: `80201c9`.
 - **T2** [S3] — delegated (`gentle-ai-worker`, Context backstop); done; RED 3 fallos (0 img, 8 blobs) → GREEN, suite 70/70, lint/check exit 0, detector []; commit: ver `git log` (feat(home): real project UI in each panel).
-- **T3** [S4] — pending.
-- **T4** [S5] — pending.
+- **T3** [S4] — delegated (`gentle-ai-worker`, Context backstop); done; RED 7/8 fallos → GREEN 10/10, suite 80/80, lint/check exit 0, detector []; commit: feat(home): hero actions and contact panel.
+- **T4** [S5] — delegated (`gentle-ai-worker`, Context backstop); in progress.
 - **T5** [S6] — pending.
 - **T6** [S7] — pending.
 
@@ -28,3 +28,4 @@ Respuestas del usuario: prioridad «Modo claro + foco», modo claro «Luz técni
 - L3: Re-crítica tras T1 (`.impeccable/critique/2026-11-21T09-44-32Z__src-pages-index-astro.md`, 20/32). Respuestas: «Sacarla del hero y la meta», «Recortes de la UI real», «Dentro de T5/T6».
 - L4: «Implementa todo» (T2–T6, secuencial: comparten `Home.astro`).
 - L5: T2 hecho. Origen de las capturas: MCM = captura real del dashboard (repo `docs/accessibility/...`); LGB = diagrama de arquitectura de su página (Pre-MVP, sin UI compilada); NRCC = tabla de roadmap (el proyecto usa marcadores en vez de capturas); ESP32 = maqueta de la pantalla TFT del gateway (`design/tft-status-v01`). `#sobre-mi` volvió al hero (+ handler de ancla) porque `homepage-copy.spec.ts` exige `#sobre-mi img` = 0; T4 le da su panel propio. Test cambiado: "keeps the dark theme decoration" → "keeps the dark theme project screenshots" (los blobs se eliminan por diseño).
+- L6: T3 hecho. Rol del hero = `profile.json` title; chip `.cine-badge` eliminado (ban craft-floor); `#contacto` pasa del footer al panel final y el nav usa `/#contacto`. Aserciones cambiadas: homepage-copy cuenta de paneles +1→+2 (panel de contacto); light-theme lista de glows sin `.cine-dot` (eliminado). Rama N=0 sin cobertura e2e.

@@ -73,13 +73,15 @@ test.describe("Light theme: technical daylight", () => {
   });
 
   test("draws no glow and no decorative blobs", async ({ page }) => {
+    // T3 (S4) quitó el chip del hero (y su punto `.cine-dot`): el glow que
+    // había que vigilar en claro era el de ese punto.
     const glows = await page.evaluate(() =>
-      [".cine-dot", ".cine-caso", ".cine-progress"].map(
+      [".cine-caso", ".cine-progress"].map(
         (selector) =>
           getComputedStyle(document.querySelector(selector)!).boxShadow,
       ),
     );
-    expect(glows).toEqual(["none", "none", "none"]);
+    expect(glows).toEqual(["none", "none"]);
 
     const blobs = await page
       .locator(".cine-blob")

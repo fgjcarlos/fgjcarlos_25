@@ -2,6 +2,10 @@
 import { getCollection } from "astro:content";
 import type { ImageMetadata } from "astro";
 import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import Links from "@config/links.json";
+import profile from "@config/profile.json";
+import type { LinksConfig } from "../types/config";
 import esp32Ui from "../assets/projects/esp32-iiot-kit-ui.webp";
 import lgbUi from "../assets/projects/lgb-ui.webp";
 import mcmUi from "../assets/projects/mcm-ui.webp";
@@ -37,7 +41,17 @@ const uiShots: Record<string, { src: ImageMetadata; alt: string }> = {
   },
 };
 
-const year = new Date().getFullYear();
+// El hero toma su rol y su email de la configuración: nada de copy inventado.
+const published = visible.length;
+const role = profile.title;
+const contactLinks = (Links as LinksConfig).links;
+const email =
+  contactLinks
+    .find((link) => link.src.startsWith("mailto:"))
+    ?.src.replace("mailto:", "") ?? "";
+const otherLinks = contactLinks.filter(
+  (link) => !link.src.startsWith("mailto:"),
+);
 ---
 
 <div class="cine-home">
@@ -49,19 +63,38 @@ const year = new Date().getFullYear();
     aria-label="Presentación"
     data-fx-panel
   >
-    <p class="cine-badge">
-      <span class="cine-dot" aria-hidden="true"></span>
-      IT/OT · IoT industrial · {year}
-    </p>
     <h1 class="cine-h1 cine-disp" data-fx-reveal>
       <span class="cine-line">Carlos</span>
       <span class="cine-line cine-grad">Fontán</span>
     </h1>
+    <p class="cine-role cine-disp" data-fx-reveal style="--reveal-delay: 140ms">
+      {role}
+    </p>
     <p class="cine-sub" data-fx-reveal style="--reveal-delay: 260ms">
       Software que conecta <b>la máquina con el navegador</b>: control
-      industrial, IoT, datos en tiempo real, visión artificial y Docker en
-      entornos de campo. {visible.length} proyectos, un scroll.
+      industrial, IoT, datos en tiempo real y Docker en entornos de campo.
+      {
+        published > 0
+          ? `${published} proyectos, un scroll.`
+          : "Todavía no hay proyectos publicados."
+      }
     </p>
+    <div class="cine-actions" data-fx-reveal style="--reveal-delay: 340ms">
+      {
+        published > 0 && (
+          <a class="cine-action cine-action-primary" href="#proyectos">
+            ver los {published} proyectos <span aria-hidden="true">↓</span>
+          </a>
+        )
+      }
+      {
+        email && (
+          <a class="cine-action cine-action-mail" href={`mailto:${email}`}>
+            {email}
+          </a>
+        )
+      }
+    </div>
     <p class="cine-hint" aria-hidden="true"><i></i> scroll</p>
   </section>
 
@@ -155,6 +188,38 @@ const year = new Date().getFullYear();
         );
       })
     }
+  </section>
+
+  <!-- Último panel del stack: el contacto cierra el recorrido. -->
+  <section
+    id="contacto"
+    class="cine-panel cine-contact"
+    aria-label="Contacto"
+    data-fx-panel
+  >
+    <p class="cine-contact-lead" data-fx-reveal>
+      Escríbeme por email o por mis redes.
+    </p>
+    <a
+      class="cine-mail cine-disp"
+      href={`mailto:${email}`}
+      data-fx-reveal
+      style="--reveal-delay: 80ms"
+    >
+      {email}
+    </a>
+    <ul class="cine-contact-links" data-fx-reveal style="--reveal-delay: 160ms">
+      {
+        otherLinks.map((link) => (
+          <li>
+            <a href={link.src} target="_blank" rel="noopener noreferrer">
+              <Icon name={link.icon} class="size-4" />
+              <span>{link.title}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </section>
 </div>
 
@@ -344,36 +409,15 @@ const year = new Date().getFullYear();
   }
 
   /* --- Hero -------------------------------------------------------------- */
-  .cine-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    width: max-content;
-    max-width: 100%;
-    border: 1px solid var(--color-base-300);
-    border-radius: 9999px;
-    padding: 0.45rem 1rem;
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+  /* El rol acompaña al nombre (nunca lo precede): misma voz tipográfica,
+     menos peso. */
+  .cine-role {
+    font-size: clamp(1rem, 1.7vw, 1.45rem);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
     color: var(--color-base-content);
-    background: color-mix(in oklch, var(--color-base-100) 70%, transparent);
-    backdrop-filter: blur(10px);
-  }
-
-  .cine-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: var(--fx-ink-accent);
-    /* En claro el punto es tinta: sin halo, que sobre papel solo ensucia. */
-    box-shadow: none;
-  }
-
-  /* `:global` saca la regla del scope de Astro: si no, el <html> tendría que
-     llevar el atributo de scope y la regla no aplicaría nunca. */
-  :global([data-theme="dark"]) .cine-dot {
-    box-shadow: 0 0 12px var(--fx-ink-accent);
+    margin: 0 0 1.5rem;
   }
 
   .cine-h1 {
@@ -404,6 +448,52 @@ const year = new Date().getFullYear();
 
   .cine-sub b {
     font-weight: 700;
+  }
+
+  /* Acciones del hero: el trabajo primero, el email como alternativa. */
+  .cine-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+    margin-top: 2rem;
+  }
+
+  .cine-action {
+    font-size: 0.95rem;
+    color: var(--color-base-content);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .cine-action-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 9999px;
+    background: var(--fx-ink-accent);
+    color: var(--color-base-100);
+    font-weight: 600;
+  }
+
+  .cine-action-primary:hover {
+    background: color-mix(
+      in oklch,
+      var(--fx-ink-accent) 85%,
+      var(--color-base-content)
+    );
+    color: var(--color-base-100);
+  }
+
+  .cine-action-mail {
+    border-bottom: 1.5px solid var(--fx-ink-accent);
+    padding-bottom: 0.2rem;
+  }
+
+  .cine-action-mail:hover {
+    color: var(--fx-ink-accent);
   }
 
   .cine-hint {
@@ -565,6 +655,52 @@ const year = new Date().getFullYear();
   .cine-links a.cine-caso:hover {
     color: var(--color-base-content);
     border-color: var(--fx-ink-accent);
+  }
+
+  /* --- Contacto ---------------------------------------------------------- */
+  .cine-contact-lead {
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    color: var(--color-base-content);
+    margin: 0 0 0.75rem;
+  }
+
+  /* El email escrito en grande: el dato de contacto, no una etiqueta. */
+  .cine-mail {
+    font-size: clamp(1.75rem, 7vw, 5.5rem);
+    line-height: 1;
+    color: var(--color-base-content);
+    text-decoration: none;
+    /* Un email largo baja de tamaño o parte, nunca empuja la página. */
+    overflow-wrap: anywhere;
+    margin: 0 0 1.75rem;
+  }
+
+  .cine-mail:hover {
+    color: var(--fx-ink-accent);
+  }
+
+  .cine-contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+  }
+
+  .cine-contact-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-base-content);
+    border-bottom: 1.5px solid var(--fx-ink-accent);
+    padding-bottom: 0.2rem;
+    transition: color 0.2s ease;
+  }
+
+  .cine-contact-links a:hover {
+    color: var(--fx-ink-accent);
   }
 
   /* --- Decoración -------------------------------------------------------- */

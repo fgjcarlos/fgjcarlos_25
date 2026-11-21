@@ -65,7 +65,9 @@ test.describe("Home: cine-scroll direction 05", () => {
     await expect(page.locator(".bio-texto")).toHaveCount(0);
   });
 
-  test("stacks the hero and every project as sticky full-screen panels on desktop", async ({
+  // T3 (S4) añadió el panel final de contacto al stack: ahora son hero,
+  // proyectos y contacto.
+  test("stacks the hero, every project and the contact panel as sticky full-screen panels on desktop", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -73,9 +75,9 @@ test.describe("Home: cine-scroll direction 05", () => {
 
     const panels = page.locator("[data-fx-panel]");
 
-    await expect(panels).toHaveCount(PROJECTS.length + 1);
+    await expect(panels).toHaveCount(PROJECTS.length + 2);
 
-    for (let index = 0; index < PROJECTS.length + 1; index++) {
+    for (let index = 0; index < PROJECTS.length + 2; index++) {
       const style = await panels.nth(index).evaluate((element) => {
         const computed = getComputedStyle(element);
 

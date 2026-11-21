@@ -9,7 +9,6 @@ const currentYear = new Date().getFullYear();
 ---
 
 <footer
-  id="contacto"
   class="mt-auto px-6 pt-10 pb-6 text-center text-sm text-base-content/70 transition-all duration-500 animate-fade-in"
 >
   <ul class="flex flex-wrap items-center justify-center gap-6 mb-4">
@@ -19,7 +18,9 @@ const currentYear = new Date().getFullYear();
           <a
             href={link.src}
             target={link.src.startsWith("http") ? "_blank" : undefined}
-            rel={link.src.startsWith("http") ? "noopener noreferrer" : undefined}
+            rel={
+              link.src.startsWith("http") ? "noopener noreferrer" : undefined
+            }
             aria-label={link.title}
             title={link.description}
             class="inline-flex items-center gap-2 transition-colors duration-200 hover:text-primary"
