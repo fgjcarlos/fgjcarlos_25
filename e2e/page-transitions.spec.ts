@@ -46,9 +46,12 @@ test.describe("Page transitions", () => {
     const link = page.locator('#proyectos a[href^="/projects/"]').first();
     await link.focus();
 
-    // El foco dispara el scroll suave del enlace (`scroll-behavior: smooth`):
-    // se espera a que la animación esté en marcha para navegar con ella en
-    // vuelo, que es lo que arrastra el scroll de la página siguiente.
+    // Se navega con un scroll suave en vuelo, que es lo que arrastraba el
+    // scroll de la página siguiente; se lanza aquí para no depender de cómo
+    // scrollea el foco.
+    await page.evaluate(() =>
+      window.scrollTo({ top: window.scrollY + 2000, behavior: "smooth" }),
+    );
     await expect
       .poll(async () => {
         const before = await page.evaluate(() => window.scrollY);

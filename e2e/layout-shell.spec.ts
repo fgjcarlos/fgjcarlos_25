@@ -45,7 +45,7 @@ test.describe("Full-width shell", () => {
   }) => {
     await page.goto("/");
 
-    const hero = await page.locator("section#sobre-mi").boundingBox();
+    const hero = await page.locator("section.cine-hero").boundingBox();
     const nav = await page.locator("nav").boundingBox();
 
     expect(hero, "hero panel").not.toBeNull();

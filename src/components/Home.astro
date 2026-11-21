@@ -21,13 +21,8 @@ const blobTones = [
 const year = new Date().getFullYear();
 ---
 
-<div class="cine-home">
-  <section
-    id="sobre-mi"
-    class="cine-panel cine-hero"
-    aria-label="Presentación"
-    data-fx-panel
-  >
+<div id="sobre-mi" class="cine-home">
+  <section class="cine-panel cine-hero" aria-label="Presentación" data-fx-panel>
     <p class="cine-badge">
       <span class="cine-dot" aria-hidden="true"></span>
       IT/OT · IoT industrial · {year}
@@ -148,6 +143,32 @@ const year = new Date().getFullYear();
       revealables.forEach((el) => io.observe(el));
     }
 
+    // Con paneles apilados, el scroll que hace el navegador al enfocar deja el
+    // elemento tapado por el panel siguiente: se lleva la página a la posición
+    // natural del panel enfocado (cada panel mide una pantalla).
+    const home = document.querySelector<HTMLElement>(".cine-home");
+    const panels = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-fx-panel]"),
+    );
+    const stacked = window.matchMedia(
+      "(min-width: 768px) and (min-height: 600px)",
+    );
+    home?.addEventListener("focusin", (event) => {
+      if (!stacked.matches) return;
+      const panel = (event.target as Element).closest<HTMLElement>(
+        "[data-fx-panel]",
+      );
+      const index = panel ? panels.indexOf(panel) : -1;
+      if (index < 0) return;
+      const top =
+        home.getBoundingClientRect().top +
+        window.scrollY +
+        index * window.innerHeight;
+      if (Math.abs(window.scrollY - top) > 1) {
+        window.scrollTo({ top, behavior: "instant" });
+      }
+    });
+
     const progress = document.querySelector<HTMLElement>("[data-fx-progress]");
     if (!progress) return;
 
@@ -178,6 +199,18 @@ const year = new Date().getFullYear();
   /* Contenedor propio: los paneles sticky se liberan antes del footer. */
   .cine-home {
     position: relative;
+  }
+
+  /* Las anclas caen justo en el borde: los paneles ya dejan sitio al nav
+     flotante con su padding, y el hero sticky no sirve como destino (el
+     navegador lo ve siempre arriba), por eso #sobre-mi es el contenedor. */
+  :global(html:has(.cine-home)) {
+    scroll-padding-top: 0;
+  }
+
+  .cine-home,
+  #proyectos {
+    scroll-margin-top: 0;
   }
 
   .cine-panel {
