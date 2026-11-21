@@ -58,6 +58,19 @@ const jsonLd = {
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- El nombre del hero es la primera pintura de la casa: su peso se
+         precarga para que el titular no llegue tarde. -->
+    {
+      Astro.url.pathname === "/" && (
+        <link
+          rel="preload"
+          href="/fonts/archivo-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      )
+    }
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
 

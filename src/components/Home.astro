@@ -173,7 +173,16 @@ const otherLinks = contactLinks.filter(
                 data-fx-reveal
                 style="--reveal-delay: 80ms"
               >
-                {p.data.title}
+                {/* Los tokens con guion ("Node-RED") no se parten por dentro. */}
+                {p.data.title
+                  .split(/(\s+)/)
+                  .map((part) =>
+                    part.includes("-") ? (
+                      <span class="cine-nb">{part}</span>
+                    ) : (
+                      part
+                    ),
+                  )}
               </h2>
               <p class="cine-desc" data-fx-reveal style="--reveal-delay: 160ms">
                 {p.data.description}
@@ -427,6 +436,15 @@ const otherLinks = contactLinks.filter(
     scroll-padding-top: 0;
   }
 
+  /* Donde los paneles no se apilan, el nav flotante tapa el borde superior:
+     el foco necesita ese hueco para no quedar debajo de la barra. Las
+     anclas no se ven afectadas: las lleva la lógica de `landOnAnchor`. */
+  @media (max-width: 767px), (max-height: 599px) {
+    :global(html:has(.cine-home)) {
+      scroll-padding-top: 5rem;
+    }
+  }
+
   .cine-home,
   #sobre-mi,
   #proyectos,
@@ -459,7 +477,7 @@ const otherLinks = contactLinks.filter(
   }
 
   .cine-disp {
-    font-family: system-ui, sans-serif;
+    font-family: var(--font-display);
     font-weight: 900;
     letter-spacing: -0.035em;
   }
@@ -481,12 +499,19 @@ const otherLinks = contactLinks.filter(
     line-height: 0.94;
     margin-block: 1.6rem 1.25rem;
     text-transform: uppercase;
+    text-wrap: balance;
   }
 
   .cine-line {
     display: block;
     padding-bottom: 0.06em;
     margin-bottom: -0.06em;
+  }
+
+  /* El degradado vive en la palabra, no en el titular: en bloque se
+     extendería por todo el ancho del h1 y el violeta no se vería. */
+  .cine-line.cine-grad {
+    display: inline-block;
   }
 
   .cine-grad {
@@ -694,10 +719,20 @@ const otherLinks = contactLinks.filter(
   }
 
   .cine-h2 {
-    font-size: clamp(2.5rem, 5.6vw, 5.25rem);
+    font-size: clamp(2rem, 5.6vw, 5.25rem);
     line-height: 1;
     letter-spacing: -0.03em;
     max-width: 14ch;
+    /* Titulares equilibrados: las líneas pesan lo mismo. */
+    text-wrap: balance;
+    /* El titular se despega de la fila de número y estado: más aire arriba
+       que abajo, para que no se lea pegado a su descripción. */
+    margin-top: 2rem;
+  }
+
+  /* Un token con guion no se parte por dentro ("Node-RED"). */
+  .cine-nb {
+    white-space: nowrap;
   }
 
   .cine-desc {
