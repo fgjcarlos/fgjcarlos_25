@@ -1,6 +1,6 @@
 ---
 title: "MCM — Mosquitto Control Manager"
-description: "Plano de control open source para Mosquitto: centraliza configuración, permisos y trazabilidad sin reemplazar el broker."
+description: "Plano de control open source para Mosquitto: gestiona usuarios, ACLs, listeners y TLS con MFA y audit trail, sin reemplazar el broker."
 publishDate: "2025-01-01"
 tags: ["Go", "React", "MQTT", "SQLite", "Docker", "OpenAPI"]
 image: ./mcm-cover.png
@@ -19,7 +19,7 @@ MCM cubre ese hueco: un plano de control limpio que se conecta al broker existen
 
 ## Qué hace
 
-**Auth y RBAC** — Login con JWT, bcrypt, cuatro roles (`viewer < auditor < operator < admin`) y bloqueo por IP/usuario tras intentos fallidos (429).
+**Auth y RBAC** — Login con JWT, bcrypt, cuatro roles (`viewer < auditor < operator < admin`), bloqueo por IP/usuario tras intentos fallidos (429) y MFA para operaciones sensibles como aplicar configuración.
 
 **Gestión de ACLs y schemas** — Reglas Mosquitto con validación de wildcards. Validadores JSON Schema enlazados a filtros de topic MQTT.
 
@@ -30,6 +30,10 @@ MCM cubre ese hueco: un plano de control limpio que se conecta al broker existen
 **Observabilidad** — slog estructurado con request IDs, `/metrics` Prometheus con labels acotados, dashboard Grafana de arranque.
 
 **HTTPS / mTLS** — Listener TLS opcional con versión mínima configurable y verificación de certificado cliente.
+
+**Listeners, TLS y plugins** — Gestión de listeners con perfiles de certificado (mTLS opcional), bridges hacia otros brokers y plugins del broker, incluida la security database del dynamic security plugin.
+
+**Editor de `mosquitto.conf`** — El editor avanzado de la configuración raíz soporta importar, validar en borrador, revisión inmutable, aplicar y recuperar revisiones anteriores.
 
 ## Stack
 
@@ -57,4 +61,4 @@ mcm version  — versión y build info
 
 ## Estado actual
 
-MVP feature-complete en fase de hardening. Auth, RBAC, ACL, stream en tiempo real, audit trail, observabilidad y HTTPS están implementados, testeados y ejercitados en cada PR vía CI.
+Alpha: el MVP de configuración gráfica no está completo. Ya están disponibles usuarios y ACLs MQTT, listeners y material TLS, ajustes generales del broker, bridges y plugins (incluido dynamic security), tráfico observado, métricas, logs, cuentas de operador con MFA y vistas de auditoría, todo ejercitado por CI en cada PR.

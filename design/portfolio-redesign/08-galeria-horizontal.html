@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FGJCARLOS · dirección 08 — galería horizontal</title>
+<style>
+  /* Propuesta de evolución: exposición horizontal con salas y arte generativo por proyecto */
+  :root{
+    --bg:oklch(97.5% .008 95);--surface:oklch(100% 0 0);--ink:oklch(19% .02 262);--muted:oklch(44% .02 262);
+    --teal:oklch(56% .12 182);--teal-deep:oklch(48% .12 182);--line:oklch(87% .012 262);
+  }
+  [data-theme="dark"]{
+    --bg:oklch(15% .015 262);--surface:oklch(19% .018 262);--ink:oklch(95% .008 95);--muted:oklch(72% .02 262);
+    --teal:oklch(80% .13 182);--teal-deep:oklch(72% .13 182);--line:oklch(30% .02 262);
+  }
+  [data-theme="dark"]{color-scheme:dark}:root:not([data-theme="dark"]){color-scheme:light}
+  html.theme-transition,html.theme-transition *,html.theme-transition *::before,html.theme-transition *::after{
+    transition:background-color .35s ease,border-color .35s ease,color .35s ease,fill .35s ease,stroke .35s ease!important;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:"LXGW WenKai Mono TC",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    background:var(--bg);color:var(--ink);line-height:1.55;height:100vh;overflow:hidden}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+  .skip{position:fixed;left:-999px;top:10px;z-index:99;background:var(--ink);color:var(--bg);padding:8px 14px}
+  .skip:focus{left:10px}
+  .disp{font-family:system-ui,sans-serif;letter-spacing:-.035em}
+
+  .shell{display:grid;grid-template-columns:330px 1fr;height:100vh}
+  .rail{border-right:1px solid var(--line);padding:26px 28px;display:flex;flex-direction:column;gap:20px;overflow:auto}
+  .rail .top{display:flex;align-items:center;justify-content:space-between}
+  .brand{font-weight:700;letter-spacing:.08em;font-size:14px}
+  .brand span{color:var(--teal)}
+  .theme-toggle{display:grid;place-items:center;width:44px;height:44px;border:1.5px solid var(--ink);border-radius:50%;background:var(--bg);color:var(--ink);cursor:pointer}
+  .theme-toggle:hover{background:var(--teal);border-color:var(--teal);color:oklch(15% .01 262)}
+  .ic-sun{display:none}[data-theme="dark"] .ic-sun{display:block}[data-theme="dark"] .ic-moon{display:none}
+  .who h1{font-size:26px;font-weight:800;letter-spacing:-.02em}
+  .who .role{color:var(--teal);font-size:13px;margin-top:3px}
+  .who p{font-size:13px;color:var(--muted);margin-top:10px}
+  .counter{display:flex;align-items:baseline;gap:6px;font-family:system-ui,sans-serif}
+  .counter b{font-size:46px;font-weight:900;letter-spacing:-.03em}
+  .counter span{font-size:15px;color:var(--muted)}
+  .dots{display:flex;gap:9px}
+  .dots button{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--muted);background:transparent;cursor:pointer;padding:0}
+  .dots button[aria-current="true"]{background:var(--teal);border-color:var(--teal);transform:scale(1.25)}
+  .arrows{display:flex;gap:10px}
+  .arrows button{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);font-size:17px;cursor:pointer;transition:background-color .2s ease,color .2s ease,transform .2s ease}
+  .arrows button:hover{background:var(--ink);color:var(--bg);transform:scale(1.06)}
+  .rail .contact{margin-top:auto;display:flex;flex-direction:column;gap:7px;font-size:13.5px}
+  .rail .contact a{color:var(--muted)}
+  .rail .contact a:hover{color:var(--teal)}
+  .rail footer{font-size:11.5px;color:var(--muted)}
+
+  .stage{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;height:100vh;position:relative}
+  .stage::-webkit-scrollbar{display:none}
+  .sala{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;height:100vh;display:grid;
+    grid-template-columns:1.05fr .95fr;gap:0;align-items:center;padding:9vh 6vw 7vh;position:relative}
+  .sala .info{padding-right:4vw;display:flex;flex-direction:column;align-items:flex-start}
+  .no{font-size:clamp(70px,8vw,130px);font-weight:900;line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--muted);opacity:.75}
+  .st{font-size:11px;letter-spacing:.12em;text-transform:uppercase;border:1.5px solid currentColor;border-radius:99px;padding:3px 12px;margin-top:14px}
+  .s-lgb .st,.s-mcm .st,.s-esp .st{color:oklch(52% .12 70)} .s-nrcc .st{color:var(--teal-deep)}
+  [data-theme="dark"] .s-lgb .st,[data-theme="dark"] .s-mcm .st,[data-theme="dark"] .s-esp .st{color:oklch(80% .13 75)}
+  h2{font-size:clamp(38px,4.4vw,64px);font-weight:900;line-height:1.02;margin-top:10px;max-width:15ch}
+  .desc{color:var(--muted);font-size:clamp(13.5px,1.1vw,16px);max-width:56ch;margin-top:16px}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;font-size:12px}
+  .tags span{border:1px solid var(--line);border-radius:99px;padding:4px 13px;color:var(--muted)}
+  .links{display:flex;gap:22px;margin-top:26px;font-size:14px}
+  .links a{border-bottom:1.5px solid var(--teal);padding-bottom:2px}
+  .links a:hover{color:var(--teal)}
+
+  .art{position:relative;height:min(66vh,560px);border-radius:1.6rem;overflow:hidden;border:1px solid var(--line);
+    box-shadow:0 30px 70px oklch(20% .03 262/.22);background:var(--surface)}
+  .art .g{position:absolute;inset:0}
+  .s-lgb .g{background:linear-gradient(150deg,oklch(88% .10 182),oklch(62% .14 220) 70%)}
+  .s-nrcc .g{background:linear-gradient(150deg,oklch(80% .12 296),oklch(58% .16 255) 70%)}
+  .s-mcm .g{background:linear-gradient(150deg,oklch(90% .13 75),oklch(68% .14 110) 70%)}
+  .s-esp .g{background:linear-gradient(150deg,oklch(90% .14 135),oklch(66% .13 170) 70%)}
+  [data-theme="dark"] .s-lgb .g{background:linear-gradient(150deg,oklch(45% .10 182),oklch(30% .08 230) 75%)}
+  [data-theme="dark"] .s-nrcc .g{background:linear-gradient(150deg,oklch(45% .14 296),oklch(28% .09 258) 75%)}
+  [data-theme="dark"] .s-mcm .g{background:linear-gradient(150deg,oklch(52% .12 75),oklch(32% .08 115) 75%)}
+  [data-theme="dark"] .s-esp .g{background:linear-gradient(150deg,oklch(50% .12 135),oklch(30% .08 170) 75%)}
+  .art svg{position:absolute;inset:0;width:100%;height:100%}
+  .art .fig{position:absolute;inset:0;display:grid;place-items:center}
+  .art .fig b{font-family:system-ui,sans-serif;font-weight:900;font-size:clamp(60px,6vw,96px);letter-spacing:-.04em;
+    color:oklch(15% .01 262/.85);background:oklch(97% .01 95/.6);padding:6px 26px;border-radius:99px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .dir{position:absolute;bottom:3vh;right:5vw;font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:3px 12px}
+
+  .sala .info>*{opacity:0;transform:translateX(-26px)}
+  .sala.in .info>*{animation:side .7s cubic-bezier(.2,.7,.2,1) forwards}
+  .sala.in .info>*:nth-child(1){animation-delay:.02s}.sala.in .info>*:nth-child(2){animation-delay:.08s}
+  .sala.in .info>*:nth-child(3){animation-delay:.14s}.sala.in .info>*:nth-child(4){animation-delay:.2s}
+  .sala.in .info>*:nth-child(5){animation-delay:.26s}.sala.in .info>*:nth-child(6){animation-delay:.32s}
+  .sala .art{opacity:0;transform:translateX(40px) scale(.96)}
+  .sala.in .art{animation:art .8s cubic-bezier(.2,.7,.2,1) .1s forwards}
+  @keyframes side{to{opacity:1;transform:none}}
+  @keyframes art{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    .stage{scroll-behavior:auto}
+    .sala .info>*,.sala .art{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+  <a class="skip" href="#s1">Saltar a la primera sala</a>
+
+  <div class="shell">
+    <aside class="rail" aria-label="Perfil y navegación">
+      <div class="top">
+        <p class="brand">FGJCARLOS<span>_</span>25</p>
+        <button class="theme-toggle" aria-label="Cambiar entre tema claro y oscuro" aria-pressed="false">
+          <svg class="ic-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="ic-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </div>
+      <div class="who">
+        <h1>Carlos Fontán</h1>
+        <p class="role">Software IT/OT · IoT industrial · automatización</p>
+        <p>Exposición de cuatro proyectos donde la máquina conoce el navegador. Deslizá las salas.</p>
+      </div>
+      <div class="counter" aria-live="polite"><b id="cur">01</b><span>/ 04</span></div>
+      <div class="dots" id="dots" role="tablist" aria-label="Salas">
+        <button aria-label="Sala 1: LGB" aria-current="true"></button>
+        <button aria-label="Sala 2: NRCC" aria-current="false"></button>
+        <button aria-label="Sala 3: MCM" aria-current="false"></button>
+        <button aria-label="Sala 4: ESP32" aria-current="false"></button>
+      </div>
+      <div class="arrows">
+        <button id="prev" aria-label="Sala anterior">←</button>
+        <button id="next" aria-label="Sala siguiente">→</button>
+      </div>
+      <div class="contact">
+        <a href="mailto:fgjcarlos@gmail.com">fgjcarlos@gmail.com</a>
+        <a href="https://github.com/fgjcarlos">github.com/fgjcarlos ↗</a>
+        <a href="https://www.linkedin.com/in/fgjcarlos/">linkedin.com/in/fgjcarlos ↗</a>
+      </div>
+      <footer>© 2026 Carlos Fontán</footer>
+    </aside>
+
+    <main class="stage" id="stage">
+      <section class="sala s-lgb" id="s1" aria-label="Sala 1 — LGB">
+        <div class="info">
+          <p class="no disp">01</p>
+          <span class="st">alpha · destacado</span>
+          <h2 class="disp">LGB — Logix Gateway Bridge</h2>
+          <p class="desc">Gateway open source bidireccional entre PLCs ControlLogix/CompactLogix (Rockwell) y OPC UA / MQTT Sparkplug B, dejando el control en el PLC.</p>
+          <div class="tags"><span>Go</span><span>React</span><span>OPC UA</span><span>Sparkplug B</span><span>Rockwell</span></div>
+          <div class="links"><a href="https://github.com/fgjcarlos/lgb">código ↗</a><a href="https://fgjcarlos.github.io/lgb/">demo ↗</a></div>
+        </div>
+        <figure class="art" aria-hidden="true">
+          <div class="g"></div>
+          <svg viewBox="0 0 500 560"><g fill="none" stroke="oklch(15% .01 262/.5)" stroke-width="1.6"><circle cx="250" cy="280" r="60"/><circle cx="250" cy="280" r="110"/><circle cx="250" cy="280" r="170"/><path d="M250 40v480M60 280h380" opacity=".4"/><circle cx="250" cy="70" r="14" fill="oklch(15% .01 262/.6)"/><circle cx="250" cy="490" r="14" fill="oklch(15% .01 262/.6)"/></g></svg>
+          <div class="fig"><b>LGB</b></div>
+        </figure>
+        <p class="dir">dirección 08 · galería horizontal</p>
+      </section>
+
+      <section class="sala s-nrcc" id="s2" aria-label="Sala 2 — NRCC">
+        <div class="info">
+          <p class="no disp">02</p>
+          <span class="st">beta · destacado</span>
+          <h2 class="disp">NRCC — Node-RED 5 Control Center</h2>
+          <p class="desc">Plano de control visual para una instancia Node-RED 5: settings.js con diff, validación, backup y rollback transaccional.</p>
+          <div class="tags"><span>Go</span><span>React</span><span>TypeScript</span><span>Node-RED</span><span>Docker</span></div>
+          <div class="links"><a href="https://github.com/fgjcarlos/nrcc">código ↗</a><a href="https://fgjcarlos.github.io/nrcc/">demo ↗</a></div>
+        </div>
+        <figure class="art" aria-hidden="true">
+          <div class="g"></div>
+          <svg viewBox="0 0 500 560"><g fill="none" stroke="oklch(15% .01 262/.5)" stroke-width="1.6"><path d="M40 90h420M40 210h420M40 330h420M40 450h420"/><path d="M110 40v480M230 40v480M350 40v480" opacity=".45"/><path d="M110 90L230 210 350 90" stroke-width="3"/><circle cx="110" cy="90" r="12" fill="oklch(15% .01 262/.6)"/><circle cx="230" cy="210" r="12" fill="oklch(15% .01 262/.6)"/><circle cx="350" cy="90" r="12" fill="oklch(15% .01 262/.6)"/></g></svg>
+          <div class="fig"><b>NRCC</b></div>
+        </figure>
+      </section>
+
+      <section class="sala s-mcm" id="s3" aria-label="Sala 3 — MCM">
+        <div class="info">
+          <p class="no disp">03</p>
+          <span class="st">alpha · destacado</span>
+          <h2 class="disp">MCM — Mosquitto Control Manager</h2>
+          <p class="desc">Plano de control open source para Mosquitto: usuarios, ACLs, listeners y TLS con MFA y audit trail, sin reemplazar el broker.</p>
+          <div class="tags"><span>Go</span><span>React</span><span>MQTT</span><span>SQLite</span><span>Docker</span></div>
+          <div class="links"><a href="https://github.com/fgjcarlos/mcm">código ↗</a><a href="https://fgjcarlos.github.io/mcm/">demo ↗</a></div>
+        </div>
+        <figure class="art" aria-hidden="true">
+          <div class="g"></div>
+          <svg viewBox="0 0 500 560"><g fill="none" stroke="oklch(15% .01 262/.5)" stroke-width="1.8"><path d="M0 280q31-46 63 0t62 0 63 0 62 0 63 0 62 0 63 0 62 0"/><path d="M0 360q31-38 63 0t62 0 63 0 62 0 63 0 62 0 63 0 62 0" opacity=".55"/><path d="M0 200q31-38 63 0t62 0 63 0 62 0 63 0 62 0 63 0 62 0" opacity=".55"/><path d="M0 120q31-30 63 0t62 0 63 0 62 0 63 0 62 0 63 0 62 0" opacity=".3"/><circle cx="250" cy="280" r="13" fill="oklch(15% .01 262/.6)"/></g></svg>
+          <div class="fig"><b>MCM</b></div>
+        </figure>
+      </section>
+
+      <section class="sala s-esp" id="s4" aria-label="Sala 4 — ESP32-IIoT-Kit">
+        <div class="info">
+          <p class="no disp">04</p>
+          <span class="st">alpha</span>
+          <h2 class="disp">ESP32-IIoT-Kit</h2>
+          <p class="desc">Plataforma educativa de monitorización industrial con ESP32: nodos por ESP-NOW, gateway autónomo con dashboard embebido y MQTT/Sparkplug B opcionales.</p>
+          <div class="tags"><span>ESP32</span><span>C</span><span>ESP-IDF</span><span>ESP-NOW</span><span>Preact</span></div>
+          <div class="links"><a href="https://github.com/fgjcarlos/ESP32-IIoT-Kit">código ↗</a><a href="https://fgjcarlos.github.io/ESP32-IIoT-Kit/">demo ↗</a></div>
+        </div>
+        <figure class="art" aria-hidden="true">
+          <div class="g"></div>
+          <svg viewBox="0 0 500 560"><g fill="none" stroke="oklch(15% .01 262/.5)" stroke-width="1.6"><path d="M110 450L210 130M210 130l120 180M330 310L420 100M110 450h140M210 130v320M330 310v140"/><circle cx="110" cy="450" r="16" fill="oklch(15% .01 262/.6)"/><circle cx="210" cy="130" r="16" fill="oklch(15% .01 262/.6)"/><circle cx="330" cy="310" r="16" fill="oklch(15% .01 262/.6)"/><circle cx="420" cy="100" r="16" fill="oklch(15% .01 262/.6)"/><path d="M250 470l14-24h-28z" fill="oklch(15% .01 262/.6)" stroke="none"/></g></svg>
+          <div class="fig"><b>ESP32</b></div>
+        </figure>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    document.querySelector('.theme-toggle').addEventListener('click', e => {
+      const b = e.currentTarget;
+      root.classList.add('theme-transition');
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      b.setAttribute('aria-pressed', String(next === 'dark'));
+      setTimeout(() => root.classList.remove('theme-transition'), 360);
+    });
+    const stage = document.getElementById('stage');
+    const salas = [...document.querySelectorAll('.sala')];
+    const dots = [...document.querySelectorAll('#dots button')];
+    const cur = document.getElementById('cur');
+    const go = i => stage.scrollTo({ left: salas[i].offsetLeft, behavior: 'smooth' });
+    document.getElementById('prev').addEventListener('click', () => go(Math.max(0, idx - 1)));
+    document.getElementById('next').addEventListener('click', () => go(Math.min(salas.length - 1, idx + 1)));
+    dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
+    let idx = 0;
+    const io = new IntersectionObserver(es => {
+      for (const e of es) if (e.isIntersecting) {
+        e.target.classList.add('in');
+        idx = salas.indexOf(e.target);
+        cur.textContent = String(idx + 1).padStart(2, '0');
+        dots.forEach((d, i) => d.setAttribute('aria-current', String(i === idx)));
+      }
+    }, { threshold: .55 });
+    salas.forEach(s => io.observe(s));
+  </script>
+</body>
+</html>

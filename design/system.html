@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FGJCARLOS · design tokens</title>
+<style>
+  *{box-sizing:border-box;margin:0}
+  :root{--mono:"LXGW WenKai Mono TC",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  body{font-family:var(--mono);background:oklch(99.3% .003 80);color:oklch(22% .014 60);padding:48px 56px;line-height:1.55}
+  header p{font-size:13px;color:oklch(44% .014 60);margin-top:4px}
+  h1{font-size:30px;letter-spacing:-.01em}
+  h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:oklch(44% .014 60);margin:44px 0 6px;border-bottom:1px solid oklch(92% .008 80);padding-bottom:8px}
+  h2 small{text-transform:none;letter-spacing:0;float:right}
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;margin-top:12px}
+  .sw{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;border:1px solid oklch(92% .008 80);border-radius:.5rem;padding:8px 10px}
+  .sw i{display:block;width:44px;height:44px;border-radius:.25rem;border:1px solid rgb(0 0 0/.15)}
+  .sw code{font-size:11.5px;display:block}
+  .sw small{font-size:10.5px;color:oklch(44% .014 60);display:block}
+  .panel-dark{background:oklch(16.5% .007 65);color:oklch(92% .006 85);border-radius:1rem;padding:18px 18px 10px;margin-top:12px}
+  .panel-dark .sw{border-color:oklch(28.5% .011 65)}
+  .panel-dark .sw i{border-color:rgb(255 255 255/.18)}
+  .panel-dark .sw small{color:oklch(85% .006 85)}
+  .panel-dark h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:oklch(85% .006 85);margin-bottom:4px}
+  .scale p{margin:10px 0;display:flex;align-items:baseline;gap:16px}
+  .scale code{font-size:11px;color:oklch(44% .014 60);min-width:190px}
+  .t-display{font-size:48px;line-height:1.1;letter-spacing:-.015em}
+  .t-h1{font-size:32px;line-height:1.2}
+  .t-h2{font-size:20px;line-height:1.3}
+  .t-body{font-size:16px;line-height:1.5;max-width:62ch}
+  .t-small{font-size:13px;color:oklch(44% .014 60)}
+  .spacing div{display:flex;align-items:center;gap:12px;margin:6px 0}
+  .spacing code{font-size:11px;color:oklch(44% .014 60);min-width:44px;text-align:right}
+  .spacing i{display:block;height:14px;background:oklch(76% .125 183 / .85);border-radius:2px}
+  .radius{display:flex;gap:16px;margin-top:12px}
+  .radius div{text-align:center;font-size:11px;color:oklch(44% .014 60)}
+  .radius i{display:block;width:84px;height:56px;background:oklch(96.4% .006 80);border:1px solid oklch(92% .008 80);margin-bottom:6px}
+  .r-field{border-radius:.25rem}.r-selector{border-radius:.5rem}.r-box{border-radius:1rem}
+  .comp{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:14px}
+  .btn{display:inline-block;background:oklch(23% .014 60);color:oklch(97% .006 80);border-radius:.25rem;padding:10px 18px;font-size:14px;text-decoration:none;border:1px solid transparent}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px oklch(22% .014 60/.18);transition:all .3s}
+  .link{color:oklch(38% .063 188.416);text-decoration:underline;text-underline-offset:3px}
+  .chip{border:1px solid currentColor;border-radius:.25rem;padding:2px 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  .chip.beta{color:oklch(37% .077 168.94)}
+  .chip.alpha{color:oklch(41% .112 45.904)}
+  .card{border:1px solid oklch(92% .008 80);border-radius:1rem;padding:14px 16px;max-width:280px;background:oklch(99.3% .003 80)}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px oklch(22% .014 60/.12);transition:all .3s}
+  .card strong{display:block;font-size:15px}
+  .card small{color:oklch(44% .014 60)}
+  .motion p{font-size:13px;margin:8px 0;max-width:80ch}
+  .motion code{font-size:12px}
+  :focus-visible{outline:2px solid oklch(77% .152 181.912);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+</head>
+<body>
+  <header>
+    <h1>FGJCARLOS · design tokens</h1>
+    <p>Sincronizado de <code>src/styles/global.css</code> y <code>tailwind.config.js</code> · oklch · mono-first · los artboards usan estos valores</p>
+  </header>
+
+  <section>
+    <h2>Color · tema claro <small>papel / tinta · eje cálido 80</small></h2>
+    <div class="swatches">
+      <div class="sw"><i style="background:oklch(99.3% .003 80)"></i><div><code>--color-base-100</code><small>oklch(99.3% 0.003 80) · fondo</small></div></div>
+      <div class="sw"><i style="background:oklch(96.4% .006 80)"></i><div><code>--color-base-200</code><small>oklch(96.4% 0.006 80) · superficie</small></div></div>
+      <div class="sw"><i style="background:oklch(92% .008 80)"></i><div><code>--color-base-300</code><small>oklch(92% 0.008 80) · bordes</small></div></div>
+      <div class="sw"><i style="background:oklch(22% .014 60)"></i><div><code>--color-base-content</code><small>oklch(22% 0.014 60) · texto</small></div></div>
+      <div class="sw"><i style="background:oklch(77% .152 181.912)"></i><div><code>--color-accent</code><small>oklch(77% 0.152 181.912) · teal</small></div></div>
+      <div class="sw"><i style="background:oklch(38% .063 188.416)"></i><div><code>--color-accent-content</code><small>oklch(38% 0.063 188.416) · teal texto</small></div></div>
+      <div class="sw"><i style="background:oklch(44% .014 60)"></i><div><code>--color-neutral</code><small>oklch(44% 0.014 60) · atenuado</small></div></div>
+      <div class="sw"><i style="background:oklch(76% .177 163.223)"></i><div><code>--color-success</code><small>oklch(76% 0.177 163.223) · beta</small></div></div>
+      <div class="sw"><i style="background:oklch(82% .189 84.429)"></i><div><code>--color-warning</code><small>oklch(82% 0.189 84.429) · alpha</small></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Color · tema oscuro <small>grafito · mismo eje cálido 65</small></h2>
+    <div class="panel-dark">
+      <h3>la profundidad la da la superficie (200 sobre 100), no una sombra</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:oklch(16.5% .007 65)"></i><div><code>--color-base-100</code><small>oklch(16.5% 0.007 65) · fondo</small></div></div>
+        <div class="sw"><i style="background:oklch(21.5% .009 65)"></i><div><code>--color-base-200</code><small>oklch(21.5% 0.009 65) · superficie</small></div></div>
+        <div class="sw"><i style="background:oklch(28.5% .011 65)"></i><div><code>--color-base-300</code><small>oklch(28.5% 0.011 65) · bordes</small></div></div>
+        <div class="sw"><i style="background:oklch(92% .006 85)"></i><div><code>--color-base-content</code><small>oklch(92% 0.006 85) · texto</small></div></div>
+        <div class="sw"><i style="background:oklch(76% .125 183)"></i><div><code>--color-accent</code><small>oklch(76% 0.125 183) · teal texto y gráficos</small></div></div>
+        <div class="sw"><i style="background:oklch(85% .006 85)"></i><div><code>--color-neutral</code><small>oklch(85% 0.006 85) · atenuado</small></div></div>
+        <div class="sw"><i style="background:oklch(70% .15 163.223)"></i><div><code>--color-success</code><small>oklch(70% 0.15 163.223) · beta</small></div></div>
+        <div class="sw"><i style="background:oklch(75% .16 84.429)"></i><div><code>--color-warning</code><small>oklch(75% 0.16 84.429) · alpha</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scale">
+    <h2>Tipografía <small>--font-display · LXGW WenKai Mono TC, monospace</small></h2>
+    <p><code>display 48/1.1</code><span class="t-display">Del sensor al navegador.</span></p>
+    <p><code>h1 32/1.2</code><span class="t-h1">Logix Gateway Bridge</span></p>
+    <p><code>h2 20/1.3</code><span class="t-h2">Proyectos destacados</span></p>
+    <p><code>body 16/1.5</code><span class="t-body">Desarrollador software con base técnica en automatización industrial, robótica e integración IT/OT.</span></p>
+    <p><code>small 13</code><span class="t-small">Publicado 2026 · estado beta · Go · React</span></p>
+  </section>
+
+  <section class="spacing">
+    <h2>Espaciado</h2>
+    <div><code>4</code><i style="width:4px"></i></div>
+    <div><code>8</code><i style="width:8px"></i></div>
+    <div><code>12</code><i style="width:12px"></i></div>
+    <div><code>16</code><i style="width:16px"></i></div>
+    <div><code>24</code><i style="width:24px"></i></div>
+    <div><code>32</code><i style="width:32px"></i></div>
+    <div><code>48</code><i style="width:48px"></i></div>
+    <div><code>64</code><i style="width:64px"></i></div>
+  </section>
+
+  <section class="radius">
+    <h2>Radio</h2>
+    <div><i class="r-field"></i>--radius-field · .25rem</div>
+    <div><i class="r-selector"></i>--radius-selector · .5rem</div>
+    <div><i class="r-box"></i>--radius-box · 1rem</div>
+  </section>
+
+  <section class="comp">
+    <h2>Componentes</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+      <a class="btn" href="#foco">Botón primario</a>
+      <a class="link" id="foco" href="#foco">Enlace accent (tab para ver el foco)</a>
+      <span class="chip beta">beta</span>
+      <span class="chip alpha">alpha</span>
+      <div class="card"><strong>Tarjeta surface</strong><small>hover: lift + sombra en claro; en oscuro sube el borde</small></div>
+    </div>
+  </section>
+
+  <section class="motion">
+    <h2>Motion</h2>
+    <p><code>fade-in .8s</code> · <code>slide-up .6s</code> · <code>slide-in-right .5s</code> · <code>card-in .55s</code> escalonado por IntersectionObserver (<code>html.js .card-reveal</code>, sin JS todo visible) · cambio de tema: cross-fade <code>.3s</code> bajo <code>html.theme-transition</code> · <code>prefers-reduced-motion: reduce</code> colapsa todo a <code>.01ms</code>.</p>
+  </section>
+</body>
+</html>

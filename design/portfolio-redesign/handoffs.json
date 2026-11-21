@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "chosen": "05-cine-scroll.html",
+  "handoffs": {
+    "05-cine-scroll.html": {
+      "status": "implemented",
+      "queued": false,
+      "sentAt": "2026-11-20T22:35:07.078Z",
+      "startedAt": "2026-11-20T22:35:57.374Z",
+      "implementedAt": "2026-11-20T23:22:16.226Z",
+      "note": "Dirección 05 implementada en el sitio real (Astro + Tailwind v4 + daisyUI): paneles a pantalla completa con escala+dim al salir, parallax en blobs, blur-reveals por IntersectionObserver, barra de progreso con gradiente, píldoras de vidrio en el nav y grano sutil. Paleta Profundidad (teal/cian/violeta) + toggle claro/oscuro. Lint, astro check, build y 47/47 e2e en verde.",
+      "previewUrl": "http://127.0.0.1:4321/"
+    }
+  }
+}

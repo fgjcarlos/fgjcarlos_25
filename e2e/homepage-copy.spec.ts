@@ -3,34 +3,12 @@ import { expect, test, type Page } from "@playwright/test";
 const HOME = "/";
 
 const PROFILE_NAME = "Carlos Fontán";
-const PROFILE_TITLE =
-  "Desarrollador Software IT/OT · IoT Industrial · Automatización";
-const PHOTO_ALT = "Foto de Carlos Fontán";
-
-/**
- * Biography copy as it must be rendered: one scannable opening paragraph
- * followed by two short supporting paragraphs. Every sentence keeps the facts
- * of the previous single-paragraph biography.
- */
-const BIO_PARAGRAPHS = [
-  "Soy Carlos Fontán, desarrollador software con base técnica en automatización industrial, robótica e integración IT/OT.",
-  "Trabajo construyendo soluciones que conectan sistemas físicos con aplicaciones web: control industrial, IoT, datos en tiempo real, visión artificial, APIs, dashboards y despliegues con Docker en entornos de campo.",
-  "Mi perfil combina experiencia industrial real con desarrollo fullstack moderno, para entender tanto la máquina, el proceso y los sensores como la arquitectura software que los conecta.",
-];
-
-/** Emphasised spans keep the exact wording and order of the previous copy. */
-const BIO_EMPHASIS = [
-  "desarrollador software con base técnica en automatización industrial, robótica e integración IT/OT",
-  "control industrial, IoT, datos en tiempo real",
-  "Docker",
-];
-
 const PROJECTS = [
   {
     title: "ESP32-IIoT-Kit",
     status: "alpha",
     description:
-      "Proyecto educativo de monitorización en piscifactorías: nodos por ESP-NOW y dashboard embebido, con conectividad irregular y alimentación limitada.",
+      "Plataforma educativa de monitorización industrial con ESP32: nodos por ESP-NOW, gateway autónomo con dashboard embebido y MQTT/Sparkplug B opcionales.",
     repo: "https://github.com/fgjcarlos/ESP32-IIoT-Kit",
     demo: "https://fgjcarlos.github.io/ESP32-IIoT-Kit/",
   },
@@ -38,7 +16,7 @@ const PROJECTS = [
     title: "LGB — Logix Gateway Bridge",
     status: "alpha",
     description:
-      "Gateway open source que conecta PLCs Rockwell con OPC UA y MQTT Sparkplug B, dejando el control en el PLC.",
+      "Gateway open source bidireccional entre PLCs ControlLogix/CompactLogix (Rockwell) y OPC UA / MQTT Sparkplug B, dejando el control en el PLC.",
     repo: "https://github.com/fgjcarlos/lgb",
     demo: "https://fgjcarlos.github.io/lgb/",
   },
@@ -46,15 +24,15 @@ const PROJECTS = [
     title: "MCM — Mosquitto Control Manager",
     status: "alpha",
     description:
-      "Plano de control open source para Mosquitto: centraliza configuración, permisos y trazabilidad sin reemplazar el broker.",
+      "Plano de control open source para Mosquitto: gestiona usuarios, ACLs, listeners y TLS con MFA y audit trail, sin reemplazar el broker.",
     repo: "https://github.com/fgjcarlos/mcm",
     demo: "https://fgjcarlos.github.io/mcm/",
   },
   {
-    title: "NRCC — Node-RED Control Center",
+    title: "NRCC — Node-RED 5 Control Center",
     status: "beta",
     description:
-      "Plano de control local-first para Node-RED: centraliza configuración, backups y supervisión sin reemplazar el runtime.",
+      "Plano de control visual para una instancia Node-RED 5: edita settings.js con diff, validación, backup y rollback transaccional.",
     repo: "https://github.com/fgjcarlos/nrcc",
     demo: "https://fgjcarlos.github.io/nrcc/",
   },
@@ -76,43 +54,149 @@ function normalize(value: string | null): string {
   return (value ?? "").replace(/\s+/g, " ").trim();
 }
 
-test.describe("Home: biography readability", () => {
-  test("splits the biography into an opening and two supporting paragraphs", async ({
+test.describe("Home: cine-scroll direction 05", () => {
+  test("opens with a text-only hero: the name, no photo and no biography", async ({
     page,
   }) => {
     await openHome(page);
 
-    const paragraphs = page.locator("#sobre-mi .bio-texto > p");
+    // T4 (S5): el id "sobre-mi" pasó al panel nuevo; el hero ya no lo lleva.
+    await expect(page.locator(".cine-hero h1")).toHaveText(PROFILE_NAME);
+    await expect(page.locator(".cine-hero img")).toHaveCount(0);
+    await expect(page.locator(".bio-texto")).toHaveCount(0);
+    // El panel "Sobre mí" tampoco lleva foto (decisión del usuario).
+    await expect(page.locator("#sobre-mi img")).toHaveCount(0);
+  });
 
-    await expect(paragraphs).toHaveCount(3);
+  // T4 (S5) añadió el panel "Sobre mí" entre el hero y los proyectos: ahora
+  // son hero, sobre mí, proyectos y contacto.
+  test("stacks the hero, every project and the contact panel as sticky full-screen panels on desktop", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openHome(page);
 
-    for (const [index, expected] of BIO_PARAGRAPHS.entries()) {
-      const text = normalize(await paragraphs.nth(index).textContent());
+    const panels = page.locator("[data-fx-panel]");
 
-      expect(text, `bio paragraph ${index + 1}`).toBe(expected);
+    await expect(panels).toHaveCount(PROJECTS.length + 3);
+
+    for (let index = 0; index < PROJECTS.length + 3; index++) {
+      const style = await panels.nth(index).evaluate((element) => {
+        const computed = getComputedStyle(element);
+
+        return {
+          position: computed.position,
+          top: computed.top,
+          height: element.getBoundingClientRect().height,
+        };
+      });
+
+      expect(style.position, `panel ${index + 1} position`).toBe("sticky");
+      expect(style.top, `panel ${index + 1} top`).toBe("0px");
+      expect(style.height, `panel ${index + 1} height`).toBe(900);
     }
   });
 
-  test("keeps the emphasised spans and the profile identity untouched", async ({
+  test("keeps a keyboard-focused project link uncovered by the stacked panels", async ({
     page,
   }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await openHome(page);
 
-    const emphasis = page.locator("#sobre-mi .bio-texto span.italic");
+    const link = page
+      .locator("#proyectos article")
+      .nth(2)
+      .getByRole("link")
+      .first();
 
-    await expect(emphasis).toHaveCount(BIO_EMPHASIS.length);
+    await link.focus();
 
-    for (const [index, expected] of BIO_EMPHASIS.entries()) {
-      const text = normalize(await emphasis.nth(index).textContent());
+    const uncovered = await link.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      const hit = document.elementFromPoint(
+        box.x + box.width / 2,
+        box.y + box.height / 2,
+      );
 
-      expect(text, `emphasis ${index + 1}`).toBe(expected);
-    }
+      return hit !== null && element.contains(hit);
+    });
 
-    await expect(page.locator("#sobre-mi h1")).toHaveText(PROFILE_NAME);
-    await expect(page.locator("#sobre-mi > div > p")).toHaveText(PROFILE_TITLE);
-    await expect(page.locator(`#sobre-mi img[alt="${PHOTO_ALT}"]`)).toHaveCount(
-      1,
+    expect(uncovered).toBe(true);
+  });
+
+  test("covers a panel cleanly: the covered panel is not scaled or dimmed", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.5));
+    await page.waitForTimeout(300);
+
+    const covered = await page
+      .locator("[data-fx-panel]")
+      .first()
+      .evaluate((element) => {
+        const computed = getComputedStyle(element);
+
+        return { transform: computed.transform, filter: computed.filter };
+      });
+
+    expect(covered).toEqual({ transform: "none", filter: "none" });
+  });
+
+  test("animates with a calm fade only: no blur, movement or looping effects", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+
+    const hidden = await page
+      .locator("#proyectos [data-fx-reveal]")
+      .first()
+      .evaluate((element) => {
+        const computed = getComputedStyle(element);
+
+        return { transform: computed.transform, filter: computed.filter };
+      });
+
+    expect(hidden).toEqual({ transform: "none", filter: "none" });
+
+    const looping = await page.evaluate(
+      () =>
+        document
+          .getAnimations()
+          .filter(
+            (animation) =>
+              animation.effect?.getTiming().iterations === Infinity,
+          ).length,
     );
+
+    expect(looping).toBe(0);
+  });
+
+  test("lets panels scroll normally on narrow screens", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openHome(page);
+
+    const position = await page
+      .locator("[data-fx-panel]")
+      .first()
+      .evaluate((element) => getComputedStyle(element).position);
+
+    expect(position).not.toBe("sticky");
+  });
+
+  test("links each project to its full case study first", async ({ page }) => {
+    await openHome(page);
+
+    const firstLink = page
+      .locator("#proyectos article")
+      .first()
+      .getByRole("link")
+      .first();
+
+    await expect(firstLink).toHaveText(/ver caso completo/);
+    await expect(firstLink).toHaveAttribute("href", /^\/projects\//);
   });
 });
 
@@ -162,17 +246,14 @@ test.describe("Home: project summaries", () => {
         `status of ${project.title}`,
       ).toHaveCount(1);
 
-      const repo = card.getByRole("link", { name: "Repo" });
-      const demo = card.getByRole("link", { name: "Demo" });
+      const repo = card.getByRole("link", { name: "código" });
+      const demo = card.getByRole("link", { name: /demo/i });
 
       await expect(repo, `repo link of ${project.title}`).toHaveAttribute(
         "href",
         project.repo,
       );
-      await expect(demo, `demo link of ${project.title}`).toHaveAttribute(
-        "href",
-        project.demo,
-      );
+      await expect(demo, `no demo link on ${project.title}`).toHaveCount(0);
     }
   });
 });

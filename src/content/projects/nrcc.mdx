@@ -1,8 +1,8 @@
 ---
-title: "NRCC — Node-RED Control Center"
-description: "Plano de control local-first para Node-RED: centraliza configuración, backups y supervisión sin reemplazar el runtime."
+title: "NRCC — Node-RED 5 Control Center"
+description: "Plano de control visual para una instancia Node-RED 5: edita settings.js con diff, validación, backup y rollback transaccional."
 publishDate: "2026-04-06"
-tags: ["Go", "React", "TypeScript", "Node-RED", "Docker", "Systemd"]
+tags: ["Go", "React", "TypeScript", "Node-RED", "Docker", "OpenAPI"]
 image: ./nrcc-cover.png
 github: "https://github.com/fgjcarlos/nrcc"
 demo: "https://fgjcarlos.github.io/nrcc/"
@@ -15,42 +15,43 @@ draft: false
 
 Node-RED es la herramienta de referencia para automatización visual e IoT en el edge — flexible, fiable y con una comunidad enorme. Pero operarlo en producción significa SSH a la máquina, editar `settings.js` a mano, gestionar paquetes npm desde terminal, scripts ad-hoc para backups y tail manual de logs. No existe una capa de control oficial.
 
-NRCC cubre ese hueco: un plano de control local-first que se ejecuta junto a Node-RED, lo supervisa como servicio y expone una UI con toda la operación diaria — sin tocar el core del runtime.
+NRCC cubre ese hueco: un plano de control visual para **una instancia Node-RED 5.x por stack**. Descubre el despliegue, importa `settings.js` sin pérdida, guía cada edición con un diff, valida el resultado, escribe un snapshot de backup, aplica el cambio transaccionalmente y hace rollback si el readiness check falla — sin editar JSON a mano ni entrar al contenedor por shell.
 
 ## Qué hace
 
-**Auth y RBAC** — Login JWT con bcrypt, roles `admin` y `viewer`, y guards que previenen lockout accidental del administrador.
+**Edición transaccional de `settings.js`** — Catálogo tipado de ajustes de alto valor y escape hatches avanzados. Cada cambio sigue el flujo completo: diff con secretos redactados, validación contra las reglas de Node-RED 5, snapshot, apply transaccional y rollback automático si el readiness probe falla.
 
-**Gestión de proceso y configuración** — Supervisa Node-RED como servicio (start, stop, restart, status). Edita `settings.js` y variables de entorno con validación. Gestión de paquetes npm desde la UI.
+**Administración de acceso** — Usuarios y roles de NRCC, superficie separada para `adminAuth` de Node-RED y autenticación del Dashboard. Cada superficie de seguridad es independiente.
 
-**Backups con integridad** — Backups manuales y programados con cron, verificación de integridad sobre cada artefacto, política de retención configurable y snapshots de seguridad pre-restore.
+**Gestión de la instancia** — Ciclo de vida del runtime, logs en vivo, entorno, librería npm, import/export de flows y métricas de sistema.
 
-**Observabilidad** — Métricas de sistema (CPU, memoria, disco, uptime) en vivo, streaming de logs vía SSE con filtros, e inspección de flows para análisis estructural.
+**Backups y restore** — Snapshots con timestamp en el volumen persistente, montables en volumen separado para sobrevivir a recreaciones del stack.
 
-**Deploy local-first** — Binario único cross-compilado (Linux amd64/arm64, macOS, Windows), instalador automático de servicio systemd y soporte Docker multi-arch. Sin dependencias externas.
+**Compatibilidad explícita** — Node-RED 5.x con edición completa; 4.x solo detección, inspección read-only y guía de migración; futuros majors en read-only hasta verificar un adaptador dedicado.
 
 ## Stack
 
 | Capa           | Tecnología                   |
 | -------------- | ---------------------------- |
-| Backend        | Go 1.25, Chi router, JWT     |
+| Backend        | Go 1.27, Chi router, JWT     |
 | Almacenamiento | JSON con file locking        |
 | Frontend       | React 19, TypeScript, Vite   |
 | Streaming      | Server-Sent Events           |
 | Empaquetado    | Frontend embebido en binario |
-| Ops            | systemd, Docker              |
+| API            | OpenAPI 3.1                  |
+| Ops            | Docker Compose, instalador   |
 
 Arquitectura **feature-folder** en el frontend, dashboard servido directamente desde el binario Go — un solo artefacto desplegable.
 
-## CLI
+## Instalación
 
+```sh
+curl -fsSL https://get.nrcc.dev/install.sh | sh   # stack desde la última release
+docker compose up -d --build                      # stack manual
 ```
-nrcc install              — instala como servicio del sistema
-nrcc portless install     — habilita URLs HTTPS locales sobre LAN
-nrcc portless quick-setup — registra aliases y arranca el proxy
-nrcc uninstall [--purge]  — desinstala servicio y datos
-```
+
+Una pila = un NRCC + un Node-RED + un volumen persistente; para más instancias, stacks adicionales en puertos y volúmenes distintos.
 
 ## Estado actual
 
-Beta, feature-complete y en fase de hardening. Cuenta con una guía de despliegue en producción, checklist operacional y workflows de release configurados; la primera release estable etiquetada está pendiente.
+Beta, en fase de hardening: feature-complete para el alcance de Node-RED 5, sin SLA ni auditoría de seguridad externa. Builds solo Linux (en macOS/Windows se usa la imagen Docker), i18n con inglés y español mantenidos, y tag releases publicados desde `main`.

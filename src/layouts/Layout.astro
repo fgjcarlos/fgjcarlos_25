@@ -16,7 +16,7 @@ interface Props {
 
 const {
   title = "Carlos Fontán - Desarrollador Software IT/OT | IoT Industrial & Automatización",
-  description = "Desarrollador software especializado en integración IT/OT, IoT industrial, automatización, aplicaciones web, Docker, OPC-UA, MQTT y visión artificial.",
+  description = "Desarrollador software especializado en integración IT/OT, IoT industrial, automatización, aplicaciones web, Docker, OPC-UA y MQTT.",
 } = Astro.props;
 
 const siteUrl = "https://fgjcarlos.com";
@@ -38,11 +38,39 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang="es" data-theme="light">
+<html lang="es" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
+    <script is:inline>
+      // Anti-FOUC: aplica el tema guardado antes del primer pintado.
+      // Por defecto oscuro; "js" habilita el reveal de tarjetas (fallback visible sin JS).
+      (() => {
+        let stored = null;
+        try {
+          stored = localStorage.getItem("theme");
+        } catch {
+          /* localStorage bloqueado: se queda en oscuro */
+        }
+        document.documentElement.dataset.theme =
+          stored === "light" ? "light" : "dark";
+        document.documentElement.classList.add("js");
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- El nombre del hero es la primera pintura de la casa: su peso se
+         precarga para que el titular no llegue tarde. -->
+    {
+      Astro.url.pathname === "/" && (
+        <link
+          rel="preload"
+          href="/fonts/archivo-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      )
+    }
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
 
@@ -65,6 +93,21 @@ const jsonLd = {
     <!-- View Transitions -->
     <ClientRouter />
 
+    <script>
+      // `scroll-behavior: smooth` (global.css) hace que el foco de un enlace
+      // dispare un scroll animado. Si la navegación arranca mientras esa
+      // animación sigue viva, el ClientRouter vuelve a 0 tras el swap pero la
+      // animación continúa y deja la página nueva scrolleada: se cancela al
+      // iniciar la navegación.
+      document.addEventListener("astro:before-preparation", () => {
+        window.scrollTo({
+          top: window.scrollY,
+          left: window.scrollX,
+          behavior: "instant",
+        });
+      });
+    </script>
+
     <!-- JSON-LD Person schema -->
     <script
       type="application/ld+json"
@@ -79,14 +122,50 @@ const jsonLd = {
     <title>{title}</title>
   </head>
   <body>
+    <!--
+      Skip link: el primer elemento enfocable de la página. Aparece al
+      recibir el foco y lleva el foco (y el scroll) al contenido.
+    -->
+    <a class="skip-link" href="#main" data-skip-link>Saltar al contenido</a>
+    <!--
+      Shell a sangre: el <main> ocupa todo el ancho del viewport y cada
+      página mantiene su propia columna legible dentro. La barra de
+      navegación es fija y flota sobre el contenido.
+    -->
     <main
+      id="main"
+      tabindex="-1"
+      aria-label="Contenido principal"
       transition:animate="fade"
-      class="container min-h-screen flex flex-col mx-auto max-w-7xl p-4 sm:p-6 md:p-8 lg:p-10 shadow-none sm:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08),-4px_0_12px_-4px_rgba(0,0,0,0.08)]"
+      class="min-h-screen flex flex-col w-full"
     >
       <NavBar />
       <slot />
       <Footer />
     </main>
+
+    <script>
+      // El skip link salta al contenido: <main> lleva `tabindex="-1"` para
+      // poder recibir el foco. El oyente vive en `document` y busca el
+      // enlace en cada clic, así que sobrevive a los swaps del router.
+      if (!document.documentElement.dataset.skipLinkBound) {
+        document.documentElement.dataset.skipLinkBound = "true";
+
+        document.addEventListener("click", (event) => {
+          const link = (event.target as Element | null)?.closest?.(
+            "[data-skip-link]",
+          );
+          if (!link) return;
+
+          const main = document.getElementById("main");
+          if (!main) return;
+
+          event.preventDefault();
+          main.focus({ preventScroll: true });
+          main.scrollIntoView({ behavior: "instant", block: "start" });
+        });
+      }
+    </script>
   </body>
 </html>
 
@@ -96,7 +175,31 @@ const jsonLd = {
     margin: 0;
     width: 100%;
     height: 100%;
-    background-color: #ffffff;
+    background-color: var(--color-base-100);
     font-family: "LXGW WenKai Mono TC", monospace;
+  }
+
+  /* Skip link: oculto hasta que recibe el foco. Va por encima de la barra
+     flotante, así que al enfocarse se lee sobre ella. */
+  .skip-link {
+    position: fixed;
+    top: 1rem;
+    left: 1.5rem;
+    z-index: 100;
+    padding: 0.7rem 1.2rem;
+    border-radius: 9999px;
+    background: var(--fx-ink-accent);
+    color: var(--color-base-100);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    /* Recortado, pero enfocable: el enlace no sale del flujo. */
+    clip-path: inset(50%);
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    clip-path: inset(0);
   }
 </style>

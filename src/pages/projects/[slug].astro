@@ -18,9 +18,9 @@ const { title, description, tags, image, github, demo, status, publishDate } =
   project.data;
 
 const statusColors: Record<string, string> = {
-  alpha: "badge-warning",
-  beta: "badge-info",
-  stable: "badge-success",
+  alpha: "badge-warning text-warning-content",
+  beta: "badge-info text-info-content",
+  stable: "badge-success text-success-content",
 };
 
 const siteUrl = "https://fgjcarlos.com";
@@ -52,15 +52,21 @@ if (demo) projectJsonLd.workExample = demo;
     is:inline
     set:html={JSON.stringify(projectJsonLd)}
   />
+  <!--
+    Columna legible centrada: la caja es a sangre, el texto no. El gutter
+    lateral mantiene el margen de lectura y el padding superior deja el
+    contenido por debajo de la barra de navegación fija.
+  -->
   <article
     data-page-content
     transition:animate="fade"
-    class="w-full max-w-3xl mx-auto py-10"
+    class="w-full max-w-[40rem] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 pt-28 pb-10"
   >
-    <!-- Back -->
+    <!-- Back: vuelve al panel del proyecto del que se vino, no al principio
+         de la lista. -->
     <a
-      href="/#proyectos"
-      class="inline-flex items-center gap-1 text-sm text-base-content/50 hover:text-primary transition-colors duration-200 mb-8 group"
+      href={`/#proyecto-${project.id}`}
+      class="inline-flex items-center gap-1 text-sm text-base-content/70 hover:text-primary transition-colors duration-200 mb-8 group"
     >
       <span class="group-hover:-translate-x-1 transition-transform duration-200"
         >←</span
@@ -81,14 +87,18 @@ if (demo) projectJsonLd.workExample = demo;
           )
         }
         <time
-          class="text-xs text-base-content/40"
+          class="text-xs text-base-content/60"
           datetime={publishDate.toISOString()}
         >
           {publishDate.getFullYear()}
         </time>
       </div>
 
-      <h1 class="text-3xl md:text-4xl font-bold mb-3">{title}</h1>
+      <h1
+        class="font-display text-3xl md:text-4xl font-bold tracking-tight mb-3"
+      >
+        {title}
+      </h1>
       <p class="text-base text-base-content/70 mb-5">{description}</p>
 
       <div class="flex flex-wrap gap-2 mb-5">
@@ -105,18 +115,6 @@ if (demo) projectJsonLd.workExample = demo;
               class="btn btn-sm btn-ghost border border-base-300 hover:border-primary transition-colors duration-200"
             >
               Repositorio
-            </a>
-          )
-        }
-        {
-          demo && (
-            <a
-              href={demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn btn-sm btn-primary text-white"
-            >
-              Ver demo
             </a>
           )
         }
@@ -143,7 +141,7 @@ if (demo) projectJsonLd.workExample = demo;
 
     <!-- MDX body -->
     <div
-      class="prose prose-base max-w-none
+      class="prose prose-base max-w-[70ch]
       prose-headings:font-bold prose-headings:text-base-content prose-headings:tracking-tight
       prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-base-300
       prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3

@@ -1,11 +1,924 @@
 ---
-import FocusAreas from "./FocusAreas.astro";
-import ProfileDescription from "./ProfileDescription.astro";
-import Projects from "./Projects.astro";
+import { getCollection } from "astro:content";
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import Links from "@config/links.json";
+import profile from "@config/profile.json";
+import { focusAreas } from "@config/focusAreas";
+import type { BioSegment, LinksConfig, ProfileConfig } from "../types/config";
+
+const projects = await getCollection("projects");
+// Los paneles se ordenan por fecha, del más reciente al más antiguo: el
+// "destacado" ya no distingue nada (tres de cuatro proyectos lo estaban).
+const visible = projects
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+// Captura de la UI de cada proyecto: la aporta el usuario. Para que un
+// panel muestre una imagen, deja el archivo en `src/assets/projects/` con el
+// nombre `<slug>-ui.webp` (16:10, ~1600 px de ancho máximo). Sin archivo, el
+// panel es solo texto.
+const shotModules = import.meta.glob<ImageMetadata>(
+  "../assets/projects/*-ui.{webp,png,jpg,jpeg,avif}",
+  { eager: true, import: "default" },
+);
+const shotsBySlug: Record<string, ImageMetadata> = {};
+for (const [path, shot] of Object.entries(shotModules)) {
+  const file = path.split("/").pop() ?? "";
+  shotsBySlug[file.replace(/-ui\.[^.]+$/, "")] = shot;
+}
+
+// El posicionamiento del panel "Sobre mí" es el primer párrafo de la bio de
+// `profile.json`, palabra por palabra: no se inventa ninguna afirmación.
+const bio = (profile as ProfileConfig).bio as BioSegment[];
+const bioParagraphs: BioSegment[][] = [];
+for (const segment of bio) {
+  if (segment.paragraphBreakBefore && bioParagraphs.length > 0) {
+    bioParagraphs.push([segment]);
+  } else if (bioParagraphs.length > 0) {
+    bioParagraphs[bioParagraphs.length - 1].push(segment);
+  } else {
+    bioParagraphs.push([segment]);
+  }
+}
+const positioning = bioParagraphs[0] ?? [];
+
+// El hero toma su rol y su email de la configuración: nada de copy inventado.
+const published = visible.length;
+const role = profile.title;
+const contactLinks = (Links as LinksConfig).links;
+const email =
+  contactLinks
+    .find((link) => link.src.startsWith("mailto:"))
+    ?.src.replace("mailto:", "") ?? "";
+const otherLinks = contactLinks.filter(
+  (link) => !link.src.startsWith("mailto:"),
+);
 ---
 
-<section class="w-full max-w-5xl mx-auto">
-  <ProfileDescription />
-  <FocusAreas />
-  <Projects />
-</section>
+<div class="cine-home">
+  <!-- El hero es texto puro, sin fotos: las capturas viven en los paneles y
+       el ancla "Sobre mí" tiene su propio panel, después de este. -->
+  <section class="cine-panel cine-hero" aria-label="Presentación" data-fx-panel>
+    <h1 class="cine-h1 cine-disp" data-fx-reveal>
+      <span class="cine-line">Carlos</span>
+      <span class="cine-line cine-grad">Fontán</span>
+    </h1>
+    <p class="cine-role cine-disp" data-fx-reveal style="--reveal-delay: 140ms">
+      {role}
+    </p>
+    <p class="cine-sub" data-fx-reveal style="--reveal-delay: 260ms">
+      Software que conecta <b>la máquina con el navegador</b>: control
+      industrial, IoT, datos en tiempo real y Docker en entornos de campo.
+      {
+        published > 0
+          ? `${published} proyectos, un scroll.`
+          : "Todavía no hay proyectos publicados."
+      }
+    </p>
+    <div class="cine-actions" data-fx-reveal style="--reveal-delay: 340ms">
+      {
+        published > 0 && (
+          <a class="cine-action cine-action-primary" href="#proyectos">
+            ver los {published} proyectos <span aria-hidden="true">↓</span>
+          </a>
+        )
+      }
+      {
+        email && (
+          <a class="cine-action cine-action-mail" href={`mailto:${email}`}>
+            {email}
+          </a>
+        )
+      }
+    </div>
+    <p class="cine-hint" aria-hidden="true"><i></i> scroll</p>
+  </section>
+
+  <!-- Panel "Sobre mí": el posicionamiento (la bio de `profile.json`) y las
+       tres áreas de trabajo. Sin foto. -->
+  <section
+    id="sobre-mi"
+    class="cine-panel cine-about"
+    aria-labelledby="titulo-sobre-mi"
+    data-fx-panel
+  >
+    <h2 class="cine-h2 cine-disp" id="titulo-sobre-mi" data-fx-reveal>
+      Sobre mí
+    </h2>
+    <p class="cine-about-text" data-fx-reveal style="--reveal-delay: 80ms">
+      {
+        positioning.map((segment) =>
+          segment.emphasis ? <strong>{segment.text}</strong> : segment.text,
+        )
+      }
+    </p>
+    <ul class="cine-areas" data-fx-reveal style="--reveal-delay: 160ms">
+      {
+        focusAreas.map((area) => (
+          <li class="cine-area">
+            <h3 class="cine-area-title">{area.title}</h3>
+            <p class="cine-area-desc">{area.description}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section id="proyectos" aria-label="Proyectos">
+    {
+      visible.map((p, i) => {
+        const shot = shotsBySlug[p.id];
+        return (
+          <article
+            class="cine-panel cine-project"
+            id={`proyecto-${p.id}`}
+            aria-labelledby={`titulo-${p.id}`}
+            data-fx-panel
+          >
+            <div class="cine-copy">
+              <div class="cine-head" data-fx-reveal>
+                <span
+                  class="cine-number cine-disp"
+                  data-num={String(i + 1).padStart(2, "0")}
+                  aria-hidden="true"
+                />
+                {p.data.status && (
+                  <span class="cine-status">
+                    <span>{p.data.status}</span>
+                  </span>
+                )}
+                <time
+                  class="cine-year"
+                  datetime={p.data.publishDate.toISOString()}
+                >
+                  {p.data.publishDate.getFullYear()}
+                </time>
+              </div>
+              <h2
+                class="cine-h2 cine-disp"
+                id={`titulo-${p.id}`}
+                data-fx-reveal
+                style="--reveal-delay: 80ms"
+              >
+                {/* Los tokens con guion ("Node-RED") no se parten por dentro. */}
+                {p.data.title
+                  .split(/(\s+)/)
+                  .map((part) =>
+                    part.includes("-") ? (
+                      <span class="cine-nb">{part}</span>
+                    ) : (
+                      part
+                    ),
+                  )}
+              </h2>
+              <p class="cine-desc" data-fx-reveal style="--reveal-delay: 160ms">
+                {p.data.description}
+              </p>
+              <div
+                class="cine-tags"
+                data-fx-reveal
+                style="--reveal-delay: 240ms"
+              >
+                {p.data.tags.map((tag) => (
+                  <span>{tag}</span>
+                ))}
+              </div>
+              <div
+                class="cine-links"
+                data-fx-reveal
+                style="--reveal-delay: 320ms"
+              >
+                <a class="cine-caso" href={`/projects/${p.id}`}>
+                  ver caso completo <span aria-hidden="true">→</span>
+                </a>
+                {p.data.github && (
+                  <a
+                    href={p.data.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    código <span aria-hidden="true">↗</span>
+                  </a>
+                )}
+              </div>
+            </div>
+            {shot && (
+              <figure
+                class="cine-shot"
+                data-fx-reveal
+                style="--reveal-delay: 200ms"
+              >
+                <Image
+                  src={shot}
+                  alt={`Captura de la interfaz de ${p.data.title}`}
+                  widths={[320, 480, 640, 1000]}
+                  sizes="(min-width: 768px) 40vw, 92vw"
+                  loading={i === 0 ? "eager" : "lazy"}
+                />
+              </figure>
+            )}
+          </article>
+        );
+      })
+    }
+  </section>
+
+  <!-- Último panel del stack: el contacto cierra el recorrido. -->
+  <section
+    id="contacto"
+    class="cine-panel cine-contact"
+    aria-labelledby="titulo-contacto"
+    data-fx-panel
+  >
+    <h2 id="titulo-contacto" class="sr-only">Contacto</h2>
+    <p class="cine-contact-lead" data-fx-reveal>
+      Escríbeme por email o por mis redes.
+    </p>
+    <a
+      class="cine-mail cine-disp"
+      href={`mailto:${email}`}
+      data-fx-reveal
+      style="--reveal-delay: 80ms"
+    >
+      {email}
+    </a>
+    <ul class="cine-contact-links" data-fx-reveal style="--reveal-delay: 160ms">
+      {
+        otherLinks.map((link) => (
+          <li>
+            <a href={link.src} target="_blank" rel="noopener noreferrer">
+              <Icon name={link.icon} class="size-4" />
+              <span>{link.title}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</div>
+
+<div class="cine-progress" data-fx-progress aria-hidden="true"></div>
+<div class="cine-vignette" aria-hidden="true"></div>
+<div class="cine-grain" aria-hidden="true"></div>
+
+<script>
+  // Fade suave al entrar en pantalla y barra de progreso del scroll.
+  const initCine = () => {
+    const revealables = document.querySelectorAll("[data-fx-reveal]");
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (!("IntersectionObserver" in window) || reduced) {
+      revealables.forEach((el) => el.classList.add("is-visible"));
+    } else {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              io.unobserve(entry.target);
+            }
+          }
+        },
+        // Basta con que el elemento entre en pantalla. Un umbral del 20 %
+        // nunca se alcanza en un bloque más alto que la ventana (más de cinco
+        // pantallas), que se quedaría invisible para siempre.
+        { threshold: 0, rootMargin: "0px 0px -10% 0px" },
+      );
+      revealables.forEach((el) => io.observe(el));
+    }
+
+    // Con paneles apilados, el scroll que hace el navegador al enfocar deja el
+    // elemento tapado por el panel siguiente: se lleva la página a la posición
+    // natural del panel enfocado (cada panel mide una pantalla).
+    const home = document.querySelector<HTMLElement>(".cine-home");
+    const panels = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-fx-panel]"),
+    );
+    const stacked = window.matchMedia(
+      "(min-width: 768px) and (min-height: 600px)",
+    );
+    home?.addEventListener("focusin", (event) => {
+      if (!stacked.matches) return;
+      const panel = (event.target as Element).closest<HTMLElement>(
+        "[data-fx-panel]",
+      );
+      const index = panel ? panels.indexOf(panel) : -1;
+      if (index < 0) return;
+      const top =
+        home.getBoundingClientRect().top +
+        window.scrollY +
+        index * window.innerHeight;
+      if (Math.abs(window.scrollY - top) > 1) {
+        window.scrollTo({ top, behavior: "instant" });
+      }
+    });
+
+    // Los paneles son sticky: el router y el navegador los ven siempre
+    // pegados arriba y no mueven la página al pulsar un ancla. Se landa en la
+    // posición natural del panel al que apunta el ancla.
+    const landOnAnchor = (id: string) => {
+      const target = document.getElementById(id);
+      const root = document.querySelector<HTMLElement>(".cine-home");
+      if (!target || !root) return;
+
+      const stacked = window.matchMedia(
+        "(min-width: 768px) and (min-height: 600px)",
+      ).matches;
+      const panel = target.closest<HTMLElement>("[data-fx-panel]");
+      let top: number;
+
+      if (stacked && panel) {
+        // En la pila cada panel mide una pantalla: su sitio natural es el del
+        // stack, no el de la caja (que está pegada arriba).
+        const panels = Array.from(
+          root.querySelectorAll<HTMLElement>("[data-fx-panel]"),
+        );
+        const index = panels.indexOf(panel);
+        if (index < 0) return;
+        top =
+          root.getBoundingClientRect().top +
+          window.scrollY +
+          index * window.innerHeight;
+      } else {
+        top = target.getBoundingClientRect().top + window.scrollY;
+      }
+
+      window.scrollTo({ top, behavior: "instant" });
+    };
+
+    if (!document.documentElement.dataset.cineAnchorBound) {
+      document.documentElement.dataset.cineAnchorBound = "true";
+      document.addEventListener("click", (event) => {
+        const href = (event.target as Element | null)
+          ?.closest("a")
+          ?.getAttribute("href");
+        if (!href?.includes("#")) return;
+        const id = decodeURIComponent(href.slice(href.indexOf("#") + 1));
+        // Tras el scroll del router, que no mueve un panel sticky.
+        requestAnimationFrame(() => landOnAnchor(id));
+      });
+      window.addEventListener("hashchange", () =>
+        landOnAnchor(decodeURIComponent(location.hash.slice(1))),
+      );
+    }
+
+    // Al llegar desde otra página con /#ancla, el router scrollea antes de que
+    // los estilos de la home den su altura a los paneles: el ancla se re-fija
+    // mientras la maqueta cambia de tamaño, hasta que la persona scrollee.
+    const hash = decodeURIComponent(location.hash.slice(1));
+    if (hash && home) {
+      landOnAnchor(hash);
+      const pin = new ResizeObserver(() => landOnAnchor(hash));
+      const release = () => pin.disconnect();
+      pin.observe(home);
+      window.setTimeout(release, 1500);
+      for (const type of ["wheel", "touchstart", "keydown"]) {
+        window.addEventListener(type, release, { once: true, passive: true });
+      }
+    }
+
+    const progress = document.querySelector<HTMLElement>("[data-fx-progress]");
+    if (!progress) return;
+
+    let ticking = false;
+    const render = () => {
+      ticking = false;
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - window.innerHeight;
+      progress.style.width = `${max > 0 ? (doc.scrollTop / max) * 100 : 0}%`;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(render);
+      }
+    };
+
+    render();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+  };
+
+  initCine();
+  document.addEventListener("astro:page-load", initCine);
+</script>
+
+<style>
+  /* Contenedor propio: los paneles sticky se liberan antes del footer. */
+  .cine-home {
+    position: relative;
+  }
+
+  /* Las anclas caen justo en el borde: los paneles ya dejan sitio al nav
+     flotante con su padding, y el hero sticky no sirve como destino (el
+     navegador lo ve siempre arriba), por eso el ancla vive en el hero. */
+  :global(html:has(.cine-home)) {
+    scroll-padding-top: 0;
+  }
+
+  /* Donde los paneles no se apilan, el nav flotante tapa el borde superior:
+     el foco necesita ese hueco para no quedar debajo de la barra. Las
+     anclas no se ven afectadas: las lleva la lógica de `landOnAnchor`. */
+  @media (max-width: 767px), (max-height: 599px) {
+    :global(html:has(.cine-home)) {
+      scroll-padding-top: 5rem;
+    }
+  }
+
+  .cine-home,
+  #sobre-mi,
+  #proyectos,
+  .cine-project {
+    scroll-margin-top: 0;
+  }
+
+  .cine-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    padding: 6rem 7vw 3rem;
+    overflow: hidden;
+    background-color: var(--color-base-100);
+    transform-origin: top center;
+  }
+
+  /* El apilado solo donde un panel cabe en una pantalla. */
+  @media (min-width: 768px) and (min-height: 600px) {
+    .cine-panel {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      min-height: 0;
+      /* Borde limpio: sombra corta pegada al borde, sin escala ni atenuado. */
+      box-shadow: 0 -12px 24px -16px oklch(0% 0 0 / 0.5);
+    }
+  }
+
+  .cine-disp {
+    font-family: var(--font-display);
+    font-weight: 900;
+    letter-spacing: -0.035em;
+  }
+
+  /* --- Hero -------------------------------------------------------------- */
+  /* El rol acompaña al nombre (nunca lo precede): misma voz tipográfica,
+     menos peso. */
+  .cine-role {
+    font-size: clamp(1rem, 1.7vw, 1.45rem);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: var(--color-base-content);
+    margin: 0 0 1.5rem;
+  }
+
+  .cine-h1 {
+    font-size: clamp(3.5rem, 10.5vw, 9.375rem);
+    line-height: 0.94;
+    margin-block: 1.6rem 1.25rem;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  .cine-line {
+    display: block;
+    padding-bottom: 0.06em;
+    margin-bottom: -0.06em;
+  }
+
+  /* El degradado vive en la palabra, no en el titular: en bloque se
+     extendería por todo el ancho del h1 y el violeta no se vería. */
+  .cine-line.cine-grad {
+    display: inline-block;
+  }
+
+  .cine-grad {
+    background: var(--fx-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .cine-sub {
+    font-size: clamp(0.95rem, 1.3vw, 1.125rem);
+    color: var(--color-base-content);
+    max-width: 58ch;
+  }
+
+  .cine-sub b {
+    font-weight: 700;
+  }
+
+  /* Acciones del hero: el trabajo primero, el email como alternativa. */
+  .cine-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+    margin-top: 2rem;
+  }
+
+  .cine-action {
+    font-size: 0.95rem;
+    color: var(--color-base-content);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .cine-action-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 9999px;
+    background: var(--fx-ink-accent);
+    color: var(--color-base-100);
+    font-weight: 600;
+  }
+
+  .cine-action-primary:hover {
+    background: color-mix(
+      in oklch,
+      var(--fx-ink-accent) 85%,
+      var(--color-base-content)
+    );
+    color: var(--color-base-100);
+  }
+
+  /* Pulsación: el botón sólido baja un píxel, como una tecla. */
+  .cine-action-primary:active {
+    transform: translateY(1px);
+  }
+
+  .cine-action-mail {
+    text-decoration: underline;
+    text-decoration-color: var(--fx-ink-accent);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.25em;
+    transition:
+      color 0.2s ease,
+      text-decoration-thickness 0.2s ease;
+  }
+
+  .cine-action-mail:hover {
+    color: var(--fx-ink-accent);
+  }
+
+  .cine-action-mail:active {
+    color: var(--fx-ink-accent);
+    text-decoration-thickness: 2.5px;
+  }
+
+  .cine-hint {
+    position: absolute;
+    bottom: 1.75rem;
+    left: 7vw;
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-base-content);
+  }
+
+  .cine-hint i {
+    display: inline-block;
+    width: 1px;
+    height: 2.1rem;
+    background: linear-gradient(var(--fx-ink-accent), transparent);
+  }
+
+  /* --- Sobre mí ---------------------------------------------------------- */
+  .cine-about {
+    gap: 1.25rem;
+  }
+
+  .cine-about-text {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.5;
+    max-width: 46ch;
+    color: var(--color-base-content);
+  }
+
+  .cine-about-text strong {
+    font-weight: 700;
+  }
+
+  .cine-areas {
+    display: grid;
+    gap: 1.5rem 2.5rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    /* Las tres áreas ocupan la banda del panel: a 1440 quedaban tres
+       columnas estrechas con media pantalla vacía a la derecha. */
+    max-width: min(100%, 68rem);
+  }
+
+  @media (min-width: 768px) {
+    .cine-areas {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .cine-area-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.4rem;
+  }
+
+  .cine-area-desc {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: color-mix(in oklch, var(--color-base-content) 90%, transparent);
+  }
+
+  /* --- Proyectos --------------------------------------------------------- */
+  .cine-project {
+    border-top: 1px solid var(--color-base-300);
+    /* Columna de texto y columna de la captura; en pantallas estrechas la
+       captura cae debajo del texto. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.25rem;
+    align-content: center;
+  }
+
+  @media (min-width: 768px) and (min-height: 600px) {
+    .cine-project {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 40%);
+      gap: 3.5rem;
+      align-items: center;
+    }
+  }
+
+  /* Marco de la captura: radio real, borde de la paleta y sombra con
+     desplazamiento (sin halo de color en el origen). */
+  .cine-shot {
+    margin: 0;
+    border: 1px solid var(--color-base-300);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--color-base-200);
+    box-shadow: 0 20px 38px -24px oklch(0% 0 0 / 0.6);
+  }
+
+  .cine-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 45svh;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* En oscuro llegan cuatro paletas de producto distintas: una desaturación
+     suave las acerca al teal de la marca sin apagar la captura. */
+  :global([data-theme="dark"]) .cine-shot img {
+    filter: saturate(0.85);
+  }
+
+  .cine-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1.4rem;
+  }
+
+  .cine-number::before {
+    content: attr(data-num);
+    font-size: clamp(3.75rem, 7vw, 6.875rem);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-base-content);
+    opacity: 0.6;
+  }
+
+  .cine-status {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border: 1px solid currentColor;
+    border-radius: 9999px;
+    padding: 0.2rem 0.7rem;
+    color: var(--color-base-content);
+  }
+
+  /* El año de cada proyecto, junto a su estado. */
+  .cine-year {
+    font-size: 0.8rem;
+    color: color-mix(in oklch, var(--color-base-content) 90%, transparent);
+  }
+
+  .cine-h2 {
+    font-size: clamp(2rem, 5.6vw, 5.25rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    max-width: 14ch;
+    /* Titulares equilibrados: las líneas pesan lo mismo. */
+    text-wrap: balance;
+    /* El titular se despega de la fila de número y estado: más aire arriba
+       que abajo, para que no se lea pegado a su descripción. */
+    margin-top: 2rem;
+  }
+
+  /* Un token con guion no se parte por dentro ("Node-RED"). */
+  .cine-nb {
+    white-space: nowrap;
+  }
+
+  .cine-desc {
+    margin-top: 1.1rem;
+    font-size: clamp(0.9rem, 1.2vw, 1.0625rem);
+    color: var(--color-base-content);
+    max-width: 62ch;
+  }
+
+  .cine-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.4rem;
+  }
+
+  .cine-tags span {
+    border: 1px solid var(--color-base-300);
+    border-radius: 9999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.78rem;
+    color: var(--color-base-content);
+  }
+
+  .cine-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.6rem;
+    margin-top: 1.9rem;
+    font-size: 0.875rem;
+  }
+
+  .cine-links a:not(.cine-caso) {
+    display: inline-block;
+    /* Alto táctil de 44px sin agrandar el texto: la línea crece, el
+       subrayado se queda pegado a las letras. */
+    line-height: 44px;
+    min-width: 44px;
+    text-decoration: underline;
+    text-decoration-color: var(--fx-ink-accent);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.25em;
+    transition:
+      color 0.2s ease,
+      text-decoration-thickness 0.2s ease;
+  }
+
+  .cine-links a:not(.cine-caso):hover {
+    color: var(--fx-ink-accent);
+  }
+
+  .cine-links a:not(.cine-caso):active {
+    color: var(--fx-ink-accent);
+    text-decoration-thickness: 2.5px;
+  }
+
+  .cine-links a.cine-caso {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    border: 1px solid
+      color-mix(in oklch, var(--fx-ink-accent) 55%, var(--color-base-300));
+    border-radius: 9999px;
+    padding: 0.6rem 1.25rem;
+    text-decoration: none;
+    box-shadow: none;
+  }
+
+  /* En oscuro la CTA no lleva halo: la profundidad es una sombra con
+     desplazamiento y desenfoque (craft floor: sin halo de color). */
+  :global([data-theme="dark"]) .cine-links a.cine-caso {
+    box-shadow: 0 12px 26px -18px oklch(var(--fx-l) 0.14 var(--fx-h1) / 0.28);
+  }
+
+  .cine-links a.cine-caso:hover {
+    color: var(--color-base-content);
+    border-color: var(--fx-ink-accent);
+  }
+
+  .cine-links a.cine-caso:active {
+    border-color: var(--fx-ink-accent);
+    transform: translateY(1px);
+  }
+
+  /* --- Contacto ---------------------------------------------------------- */
+  .cine-contact-lead {
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    color: var(--color-base-content);
+    margin: 0 0 0.75rem;
+  }
+
+  /* El email escrito en grande: el dato de contacto, no una etiqueta. */
+  .cine-mail {
+    font-size: clamp(1.75rem, 7vw, 5.5rem);
+    line-height: 1;
+    color: var(--color-base-content);
+    text-decoration: none;
+    /* Un email largo baja de tamaño o parte, nunca empuja la página. */
+    overflow-wrap: anywhere;
+    margin: 0 0 1.75rem;
+  }
+
+  .cine-mail:hover {
+    color: var(--fx-ink-accent);
+  }
+
+  .cine-contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+  }
+
+  .cine-contact-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-base-content);
+    border-bottom: 1.5px solid var(--fx-ink-accent);
+    padding-bottom: 0.2rem;
+    transition: color 0.2s ease;
+  }
+
+  .cine-contact-links a:hover {
+    color: var(--fx-ink-accent);
+  }
+
+  .cine-contact-links a:active {
+    color: var(--fx-ink-accent);
+  }
+
+  /* --- Decoración -------------------------------------------------------- */
+  .cine-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    height: 3px;
+    width: 0;
+    border-radius: 0 9999px 9999px 0;
+    background: var(--fx-grad);
+    box-shadow: none;
+  }
+
+  :global([data-theme="dark"]) .cine-progress {
+    box-shadow: 0 0 14px oklch(var(--fx-l) 0.14 var(--fx-h1) / 0.8);
+  }
+
+  /* Viñeta de papel: en claro es una sombra cálima, no un tinte azul. */
+  .cine-vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    pointer-events: none;
+    background: radial-gradient(
+      130% 100% at 50% 0%,
+      transparent 55%,
+      oklch(30% 0.012 70 / 0.1)
+    );
+  }
+
+  /* La viñeta de hoy es la del tema oscuro: se conserva tal cual. */
+  :global([data-theme="dark"]) .cine-vignette {
+    background: radial-gradient(
+      130% 100% at 50% 0%,
+      transparent 55%,
+      oklch(20% 0.02 262 / 0.12)
+    );
+  }
+
+  .cine-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  }
+
+  [data-theme="dark"] .cine-grain {
+    opacity: 0.07;
+  }
+</style>
