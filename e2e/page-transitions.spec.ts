@@ -38,6 +38,33 @@ test.describe("Page transitions", () => {
     expect(afterNavBox?.y).toBeCloseTo(beforeNavBox!.y, 0);
   });
 
+  test("lands the project detail at the top when navigating with the keyboard", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const link = page.locator('#proyectos a[href^="/projects/"]').first();
+    await link.focus();
+
+    // El foco dispara el scroll suave del enlace (`scroll-behavior: smooth`):
+    // se espera a que la animación esté en marcha para navegar con ella en
+    // vuelo, que es lo que arrastra el scroll de la página siguiente.
+    await expect
+      .poll(async () => {
+        const before = await page.evaluate(() => window.scrollY);
+        await page.waitForTimeout(60);
+        return (await page.evaluate(() => window.scrollY)) > before;
+      })
+      .toBe(true);
+
+    await page.keyboard.press("Enter");
+    await page.waitForURL(/\/projects\//);
+
+    // El scroll residual aparece tras el swap: se asienta y se mide.
+    await page.waitForTimeout(600);
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
   test("does not replay transform-based entrance animations during client navigation", async ({
     page,
   }) => {

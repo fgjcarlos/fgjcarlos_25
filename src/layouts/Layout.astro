@@ -80,6 +80,21 @@ const jsonLd = {
     <!-- View Transitions -->
     <ClientRouter />
 
+    <script>
+      // `scroll-behavior: smooth` (global.css) hace que el foco de un enlace
+      // dispare un scroll animado. Si la navegación arranca mientras esa
+      // animación sigue viva, el ClientRouter vuelve a 0 tras el swap pero la
+      // animación continúa y deja la página nueva scrolleada: se cancela al
+      // iniciar la navegación.
+      document.addEventListener("astro:before-preparation", () => {
+        window.scrollTo({
+          top: window.scrollY,
+          left: window.scrollX,
+          behavior: "instant",
+        });
+      });
+    </script>
+
     <!-- JSON-LD Person schema -->
     <script
       type="application/ld+json"
