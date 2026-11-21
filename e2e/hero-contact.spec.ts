@@ -86,13 +86,13 @@ test.describe("Hero: role, projects and email", () => {
 
     const published = await page.locator("#proyectos article").count();
 
-    const projects = page.locator('#sobre-mi a[href="#proyectos"]');
+    const projects = page.locator('.cine-hero a[href="#proyectos"]');
     await expect(projects).toHaveCount(1);
     await expect(projects).toHaveText(
       new RegExp(`ver los ${published} proyectos`),
     );
 
-    const mail = page.locator(`#sobre-mi a[href="mailto:${EMAIL}"]`);
+    const mail = page.locator(`.cine-hero a[href="mailto:${EMAIL}"]`);
     await expect(mail).toHaveCount(1);
     await expect(mail).toHaveText(EMAIL);
     await expect(mail).toBeVisible();
@@ -105,14 +105,16 @@ test.describe("Hero: role, projects and email", () => {
 
     await expect(page.locator(".cine-badge")).toHaveCount(0);
 
-    const role = page.locator("#sobre-mi .cine-role");
+    // T4 (S5): el id "sobre-mi" es ahora el panel nuevo; el hero se elige por
+    // su clase.
+    const role = page.locator(".cine-hero .cine-role");
     await expect(role).toHaveText(ROLE);
     // El rol acompaña al nombre: nunca queda por encima del titular.
-    await expect(page.locator("#sobre-mi h1")).toHaveText("Carlos Fontán");
+    await expect(page.locator(".cine-hero h1")).toHaveText("Carlos Fontán");
 
     const roleAfterName = await page.evaluate(() => {
-      const name = document.querySelector("#sobre-mi h1")!;
-      const role = document.querySelector("#sobre-mi .cine-role")!;
+      const name = document.querySelector(".cine-hero h1")!;
+      const role = document.querySelector(".cine-hero .cine-role")!;
 
       return Boolean(
         name.compareDocumentPosition(role) & Node.DOCUMENT_POSITION_FOLLOWING,
@@ -127,7 +129,7 @@ test.describe("Hero: role, projects and email", () => {
   }) => {
     await openHome(page);
 
-    await expect(page.locator("#sobre-mi")).not.toContainText(
+    await expect(page.locator(".cine-hero")).not.toContainText(
       "visión artificial",
     );
 
@@ -148,7 +150,7 @@ test.describe("Hero and contact panel in both themes", () => {
       await page.addInitScript((t) => localStorage.setItem("theme", t), theme);
       await openHome(page);
 
-      const paper = await paint(page, "#sobre-mi", "background-color");
+      const paper = await paint(page, ".cine-hero", "background-color");
 
       for (const selector of [".cine-role", ".cine-action-mail"]) {
         const color = await paint(page, selector, "color");

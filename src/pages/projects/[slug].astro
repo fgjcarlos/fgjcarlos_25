@@ -62,9 +62,10 @@ if (demo) projectJsonLd.workExample = demo;
     transition:animate="fade"
     class="w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 pt-28 pb-10"
   >
-    <!-- Back -->
+    <!-- Back: vuelve al panel del proyecto del que se vino, no al principio
+         de la lista. -->
     <a
-      href="/#proyectos"
+      href={`/#proyecto-${project.id}`}
       class="inline-flex items-center gap-1 text-sm text-base-content/70 hover:text-primary transition-colors duration-200 mb-8 group"
     >
       <span class="group-hover:-translate-x-1 transition-transform duration-200"

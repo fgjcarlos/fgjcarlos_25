@@ -34,7 +34,8 @@ const navLinks = [
     type="button"
     data-theme-toggle
     class="cine-pill cine-pill-toggle btn btn-ghost btn-circle"
-    aria-label="Cambiar entre tema claro y oscuro"
+    aria-label="Modo oscuro"
+    aria-pressed="false"
   >
     <Icon name="arcticons:moon" class="theme-icon-moon size-5" />
     <svg
@@ -93,6 +94,17 @@ const navLinks = [
       stored === "light" ? "light" : "dark";
   };
 
+  /** `aria-pressed` dice si el modo oscuro está activo. */
+  const syncThemeToggle = () => {
+    const btn = document.querySelector("[data-theme-toggle]");
+    if (!(btn instanceof HTMLElement)) return;
+
+    btn.setAttribute(
+      "aria-pressed",
+      String(document.documentElement.dataset.theme === "dark"),
+    );
+  };
+
   const bindThemeToggle = () => {
     const btn = document.querySelector("[data-theme-toggle]");
     if (!(btn instanceof HTMLElement) || btn.dataset.bound) {
@@ -110,44 +122,72 @@ const navLinks = [
         /* memoria de sesión no disponible */
       }
       window.setTimeout(() => root.classList.remove("theme-transition"), 350);
+      syncThemeToggle();
     });
   };
 
   bindThemeToggle();
   applyStoredTheme();
+  syncThemeToggle();
   // Con ClientRouter el DOM se reemplaza en cada navegación: re-aplicar y
   // re-vincular en after-swap (antes de pintar) y en page-load (botón nuevo).
-  document.addEventListener("astro:after-swap", applyStoredTheme);
+  document.addEventListener("astro:after-swap", () => {
+    applyStoredTheme();
+    syncThemeToggle();
+  });
   document.addEventListener("astro:page-load", () => {
     applyStoredTheme();
+    syncThemeToggle();
     bindThemeToggle();
   });
 </script>
 
 <script>
-  const closeMobileNavOnLinkClick = () => {
+  // El menú móvil se cierra solo: con Escape (devolviendo el foco al botón),
+  // al pulsar fuera y al seguir un enlace. Los oyentes viven en `document` y
+  // se registran una sola vez, así que no se duplican tras un swap del
+  // ClientRouter.
+  const closeMobileNav = (returnFocus: boolean) => {
     const menu = document.querySelector("[data-mobile-nav-menu]");
+    if (!(menu instanceof HTMLDetailsElement) || !menu.open) return;
 
-    if (
-      !(menu instanceof HTMLDetailsElement) ||
-      menu.dataset.closeHandlerAttached
-    ) {
-      return;
+    menu.open = false;
+
+    if (returnFocus) {
+      const summary = menu.querySelector("summary");
+      if (summary instanceof HTMLElement) summary.focus();
     }
-
-    menu.dataset.closeHandlerAttached = "true";
-
-    menu.addEventListener("click", (event) => {
-      const target = event.target;
-
-      if (target instanceof Element && target.closest("a")) {
-        menu.open = false;
-      }
-    });
   };
 
-  closeMobileNavOnLinkClick();
-  document.addEventListener("astro:page-load", closeMobileNavOnLinkClick);
+  if (!document.documentElement.dataset.mobileNavBound) {
+    document.documentElement.dataset.mobileNavBound = "true";
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      closeMobileNav(true);
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+      const menu = document.querySelector("[data-mobile-nav-menu]");
+      if (!(menu instanceof HTMLDetailsElement) || !menu.open) return;
+
+      const target = event.target;
+      if (target instanceof Node && menu.contains(target)) return;
+
+      closeMobileNav(false);
+    });
+
+    document.addEventListener("click", (event) => {
+      const menu = document.querySelector("[data-mobile-nav-menu]");
+      if (!(menu instanceof HTMLDetailsElement) || !menu.open) return;
+
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (!menu.contains(target) || !target.closest("a")) return;
+
+      closeMobileNav(false);
+    });
+  }
 </script>
 
 <style>

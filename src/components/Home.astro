@@ -5,20 +5,19 @@ import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import Links from "@config/links.json";
 import profile from "@config/profile.json";
-import type { LinksConfig } from "../types/config";
+import { focusAreas } from "@config/focusAreas";
+import type { BioSegment, LinksConfig, ProfileConfig } from "../types/config";
 import esp32Ui from "../assets/projects/esp32-iiot-kit-ui.webp";
 import lgbUi from "../assets/projects/lgb-ui.webp";
 import mcmUi from "../assets/projects/mcm-ui.webp";
 import nrccUi from "../assets/projects/nrcc-ui.webp";
 
 const projects = await getCollection("projects");
+// Los paneles se ordenan por fecha, del más reciente al más antiguo: el
+// "destacado" ya no distingue nada (tres de cuatro proyectos lo estaban).
 const visible = projects
   .filter((p) => !p.data.draft)
-  .sort((a, b) => {
-    if (a.data.featured && !b.data.featured) return -1;
-    if (!a.data.featured && b.data.featured) return 1;
-    return b.data.publishDate.getTime() - a.data.publishDate.getTime();
-  });
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
 
 // Recorte de la UI real de cada proyecto, por slug. Los alt cuentan qué se
 // ve en la captura: son la evidencia de la interfaz, no decoración.
@@ -41,6 +40,21 @@ const uiShots: Record<string, { src: ImageMetadata; alt: string }> = {
   },
 };
 
+// El posicionamiento del panel "Sobre mí" es el primer párrafo de la bio de
+// `profile.json`, palabra por palabra: no se inventa ninguna afirmación.
+const bio = (profile as ProfileConfig).bio as BioSegment[];
+const bioParagraphs: BioSegment[][] = [];
+for (const segment of bio) {
+  if (segment.paragraphBreakBefore && bioParagraphs.length > 0) {
+    bioParagraphs.push([segment]);
+  } else if (bioParagraphs.length > 0) {
+    bioParagraphs[bioParagraphs.length - 1].push(segment);
+  } else {
+    bioParagraphs.push([segment]);
+  }
+}
+const positioning = bioParagraphs[0] ?? [];
+
 // El hero toma su rol y su email de la configuración: nada de copy inventado.
 const published = visible.length;
 const role = profile.title;
@@ -55,14 +69,9 @@ const otherLinks = contactLinks.filter(
 ---
 
 <div class="cine-home">
-  <!-- El ancla "Sobre mí" apunta al hero (no a un contenedor que lo envuelve):
-       el hero es texto puro, sin fotos, y las capturas viven en los paneles. -->
-  <section
-    id="sobre-mi"
-    class="cine-panel cine-hero"
-    aria-label="Presentación"
-    data-fx-panel
-  >
+  <!-- El hero es texto puro, sin fotos: las capturas viven en los paneles y
+       el ancla "Sobre mí" tiene su propio panel, después de este. -->
+  <section class="cine-panel cine-hero" aria-label="Presentación" data-fx-panel>
     <h1 class="cine-h1 cine-disp" data-fx-reveal>
       <span class="cine-line">Carlos</span>
       <span class="cine-line cine-grad">Fontán</span>
@@ -98,6 +107,36 @@ const otherLinks = contactLinks.filter(
     <p class="cine-hint" aria-hidden="true"><i></i> scroll</p>
   </section>
 
+  <!-- Panel "Sobre mí": el posicionamiento (la bio de `profile.json`) y las
+       tres áreas de trabajo. Sin foto. -->
+  <section
+    id="sobre-mi"
+    class="cine-panel cine-about"
+    aria-labelledby="titulo-sobre-mi"
+    data-fx-panel
+  >
+    <h2 class="cine-h2 cine-disp" id="titulo-sobre-mi" data-fx-reveal>
+      Sobre mí
+    </h2>
+    <p class="cine-about-text" data-fx-reveal style="--reveal-delay: 80ms">
+      {
+        positioning.map((segment) =>
+          segment.emphasis ? <strong>{segment.text}</strong> : segment.text,
+        )
+      }
+    </p>
+    <ul class="cine-areas" data-fx-reveal style="--reveal-delay: 160ms">
+      {
+        focusAreas.map((area) => (
+          <li class="cine-area">
+            <h3 class="cine-area-title">{area.title}</h3>
+            <p class="cine-area-desc">{area.description}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
   <section id="proyectos" aria-label="Proyectos">
     {
       visible.map((p, i) => {
@@ -105,7 +144,8 @@ const otherLinks = contactLinks.filter(
         return (
           <article
             class="cine-panel cine-project"
-            aria-label={`Proyecto ${p.data.title}`}
+            id={`proyecto-${p.id}`}
+            aria-labelledby={`titulo-${p.id}`}
             data-fx-panel
           >
             <div class="cine-copy">
@@ -116,14 +156,20 @@ const otherLinks = contactLinks.filter(
                   aria-hidden="true"
                 />
                 {p.data.status && (
-                  <span class:list={["cine-status", { hot: p.data.featured }]}>
+                  <span class="cine-status">
                     <span>{p.data.status}</span>
-                    {p.data.featured && " · destacado"}
                   </span>
                 )}
+                <time
+                  class="cine-year"
+                  datetime={p.data.publishDate.toISOString()}
+                >
+                  {p.data.publishDate.getFullYear()}
+                </time>
               </div>
               <h2
                 class="cine-h2 cine-disp"
+                id={`titulo-${p.id}`}
                 data-fx-reveal
                 style="--reveal-delay: 80ms"
               >
@@ -278,29 +324,41 @@ const otherLinks = contactLinks.filter(
       }
     });
 
-    // El hero es sticky: el router y el navegador lo ven siempre pegado
-    // arriba y no mueven la página al pulsar "Sobre mí". Se scrollea a la
+    // Los paneles son sticky: el router y el navegador los ven siempre
+    // pegados arriba y no mueven la página al pulsar un ancla. Se landa en la
     // posición natural del panel al que apunta el ancla.
-    if (!document.documentElement.dataset.cineAnchorBound) {
-      document.documentElement.dataset.cineAnchorBound = "true";
-      const scrollToAnchor = (id: string) => {
-        const anchor = document.getElementById(id);
-        const panel = anchor?.closest<HTMLElement>("[data-fx-panel]");
-        if (!panel) return;
-        const all = Array.from(
-          document.querySelectorAll<HTMLElement>("[data-fx-panel]"),
+    const landOnAnchor = (id: string) => {
+      const target = document.getElementById(id);
+      const root = document.querySelector<HTMLElement>(".cine-home");
+      if (!target || !root) return;
+
+      const stacked = window.matchMedia(
+        "(min-width: 768px) and (min-height: 600px)",
+      ).matches;
+      const panel = target.closest<HTMLElement>("[data-fx-panel]");
+      let top: number;
+
+      if (stacked && panel) {
+        // En la pila cada panel mide una pantalla: su sitio natural es el del
+        // stack, no el de la caja (que está pegada arriba).
+        const panels = Array.from(
+          root.querySelectorAll<HTMLElement>("[data-fx-panel]"),
         );
-        const index = all.indexOf(panel);
-        const root = document.querySelector<HTMLElement>(".cine-home");
-        if (index < 0 || !root) return;
-        const top =
+        const index = panels.indexOf(panel);
+        if (index < 0) return;
+        top =
           root.getBoundingClientRect().top +
           window.scrollY +
           index * window.innerHeight;
-        if (Math.abs(window.scrollY - top) > 1) {
-          window.scrollTo({ top, behavior: "instant" });
-        }
-      };
+      } else {
+        top = target.getBoundingClientRect().top + window.scrollY;
+      }
+
+      window.scrollTo({ top, behavior: "instant" });
+    };
+
+    if (!document.documentElement.dataset.cineAnchorBound) {
+      document.documentElement.dataset.cineAnchorBound = "true";
       document.addEventListener("click", (event) => {
         const href = (event.target as Element | null)
           ?.closest("a")
@@ -308,23 +366,20 @@ const otherLinks = contactLinks.filter(
         if (!href?.includes("#")) return;
         const id = decodeURIComponent(href.slice(href.indexOf("#") + 1));
         // Tras el scroll del router, que no mueve un panel sticky.
-        requestAnimationFrame(() => scrollToAnchor(id));
+        requestAnimationFrame(() => landOnAnchor(id));
       });
       window.addEventListener("hashchange", () =>
-        scrollToAnchor(decodeURIComponent(location.hash.slice(1))),
+        landOnAnchor(decodeURIComponent(location.hash.slice(1))),
       );
     }
 
     // Al llegar desde otra página con /#ancla, el router scrollea antes de que
     // los estilos de la home den su altura a los paneles: el ancla se re-fija
     // mientras la maqueta cambia de tamaño, hasta que la persona scrollee.
-    const target = location.hash
-      ? document.getElementById(decodeURIComponent(location.hash.slice(1)))
-      : null;
-    if (target && home) {
-      const pin = new ResizeObserver(() =>
-        target.scrollIntoView({ behavior: "instant" }),
-      );
+    const hash = decodeURIComponent(location.hash.slice(1));
+    if (hash && home) {
+      landOnAnchor(hash);
+      const pin = new ResizeObserver(() => landOnAnchor(hash));
       const release = () => pin.disconnect();
       pin.observe(home);
       window.setTimeout(release, 1500);
@@ -374,7 +429,8 @@ const otherLinks = contactLinks.filter(
 
   .cine-home,
   #sobre-mi,
-  #proyectos {
+  #proyectos,
+  .cine-project {
     scroll-margin-top: 0;
   }
 
@@ -516,6 +572,50 @@ const otherLinks = contactLinks.filter(
     background: linear-gradient(var(--fx-ink-accent), transparent);
   }
 
+  /* --- Sobre mí ---------------------------------------------------------- */
+  .cine-about {
+    gap: 1.25rem;
+  }
+
+  .cine-about-text {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.5;
+    max-width: 46ch;
+    color: var(--color-base-content);
+  }
+
+  .cine-about-text strong {
+    font-weight: 700;
+  }
+
+  .cine-areas {
+    display: grid;
+    gap: 1.5rem 2.5rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    max-width: 72ch;
+  }
+
+  @media (min-width: 768px) {
+    .cine-areas {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .cine-area-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.4rem;
+  }
+
+  .cine-area-desc {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: color-mix(in oklch, var(--color-base-content) 90%, transparent);
+  }
+
   /* --- Proyectos --------------------------------------------------------- */
   .cine-project {
     border-top: 1px solid var(--color-base-300);
@@ -587,8 +687,10 @@ const otherLinks = contactLinks.filter(
     color: var(--color-base-content);
   }
 
-  .cine-status.hot {
-    color: var(--fx-ink-accent);
+  /* El año de cada proyecto, junto a su estado. */
+  .cine-year {
+    font-size: 0.8rem;
+    color: color-mix(in oklch, var(--color-base-content) 90%, transparent);
   }
 
   .cine-h2 {

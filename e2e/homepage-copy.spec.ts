@@ -60,13 +60,16 @@ test.describe("Home: cine-scroll direction 05", () => {
   }) => {
     await openHome(page);
 
-    await expect(page.locator("#sobre-mi h1")).toHaveText(PROFILE_NAME);
-    await expect(page.locator("#sobre-mi img")).toHaveCount(0);
+    // T4 (S5): el id "sobre-mi" pasó al panel nuevo; el hero ya no lo lleva.
+    await expect(page.locator(".cine-hero h1")).toHaveText(PROFILE_NAME);
+    await expect(page.locator(".cine-hero img")).toHaveCount(0);
     await expect(page.locator(".bio-texto")).toHaveCount(0);
+    // El panel "Sobre mí" tampoco lleva foto (decisión del usuario).
+    await expect(page.locator("#sobre-mi img")).toHaveCount(0);
   });
 
-  // T3 (S4) añadió el panel final de contacto al stack: ahora son hero,
-  // proyectos y contacto.
+  // T4 (S5) añadió el panel "Sobre mí" entre el hero y los proyectos: ahora
+  // son hero, sobre mí, proyectos y contacto.
   test("stacks the hero, every project and the contact panel as sticky full-screen panels on desktop", async ({
     page,
   }) => {
@@ -75,9 +78,9 @@ test.describe("Home: cine-scroll direction 05", () => {
 
     const panels = page.locator("[data-fx-panel]");
 
-    await expect(panels).toHaveCount(PROJECTS.length + 2);
+    await expect(panels).toHaveCount(PROJECTS.length + 3);
 
-    for (let index = 0; index < PROJECTS.length + 2; index++) {
+    for (let index = 0; index < PROJECTS.length + 3; index++) {
       const style = await panels.nth(index).evaluate((element) => {
         const computed = getComputedStyle(element);
 

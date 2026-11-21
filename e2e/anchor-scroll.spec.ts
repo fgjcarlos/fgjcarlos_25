@@ -33,7 +33,16 @@ test.describe("Anchor section navigation", () => {
     await page.evaluate(() => window.scrollTo(0, 3000));
     await nav.getByRole("link", { name: "Sobre mí" }).click();
     await settle();
-    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+    // T4 (S5): "Sobre mí" ya no es el hero, es su propio panel en la pila.
+    await expect
+      .poll(() =>
+        page
+          .locator("#sobre-mi")
+          .evaluate((element) =>
+            Math.round(element.getBoundingClientRect().top),
+          ),
+      )
+      .toBe(0);
 
     await nav.getByRole("link", { name: "Contacto" }).click();
     await settle();
@@ -96,6 +105,15 @@ test.describe("Anchor section navigation", () => {
       .getByRole("link", { name: "Sobre mí" })
       .click();
     await page.waitForURL(/\/#sobre-mi$/);
-    await expect(page.locator("section.cine-hero h1")).toBeInViewport();
+    // T4 (S5): el ancla "Sobre mí" es el panel nuevo, no el hero.
+    await expect
+      .poll(() =>
+        page
+          .locator("#sobre-mi")
+          .evaluate((element) =>
+            Math.round(element.getBoundingClientRect().top),
+          ),
+      )
+      .toBe(0);
   });
 });
