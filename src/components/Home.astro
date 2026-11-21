@@ -178,14 +178,6 @@ const year = new Date().getFullYear();
   /* Contenedor propio: los paneles sticky se liberan antes del footer. */
   .cine-home {
     position: relative;
-    /* Paneles a sangre completa: salen del ancho máximo del <main>. */
-    margin-inline: calc(50% - 50vw);
-  }
-
-  /* 100vw incluye la barra de scroll; clip evita el scroll horizontal sin
-     crear un contenedor de scroll (que rompería el sticky). */
-  :global(body) {
-    overflow-x: clip;
   }
 
   .cine-panel {
@@ -477,10 +469,5 @@ const year = new Date().getFullYear();
 
   [data-theme="dark"] .cine-grain {
     opacity: 0.07;
-  }
-
-  /* La sombra lateral del <main> no tiene sentido con paneles a sangre. */
-  :global(main:has(.cine-home)) {
-    box-shadow: none;
   }
 </style>

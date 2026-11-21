@@ -151,15 +151,18 @@ const navLinks = [
 </script>
 
 <style>
+  /* Barra fija a sangre: ocupa todo el ancho del viewport y flota sobre el
+     contenido (no lo empuja hacia abajo). */
   .cine-nav {
-    position: sticky;
-    top: 0;
+    position: fixed;
+    top: 1rem;
+    left: 0;
+    right: 0;
     z-index: 50;
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    width: 100%;
-    padding: 0.85rem 5vw;
+    padding: 0 1.5rem;
     pointer-events: none;
   }
 

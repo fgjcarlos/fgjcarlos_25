@@ -109,10 +109,12 @@ const jsonLd = {
     <title>{title}</title>
   </head>
   <body>
-    <main
-      transition:animate="fade"
-      class="container min-h-screen flex flex-col mx-auto max-w-7xl p-4 sm:p-6 md:p-8 lg:p-10 shadow-none sm:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08),-4px_0_12px_-4px_rgba(0,0,0,0.08)]"
-    >
+    <!--
+      Shell a sangre: el <main> ocupa todo el ancho del viewport y cada
+      página mantiene su propia columna legible dentro. La barra de
+      navegación es fija y flota sobre el contenido.
+    -->
+    <main transition:animate="fade" class="min-h-screen flex flex-col w-full">
       <NavBar />
       <slot />
       <Footer />
