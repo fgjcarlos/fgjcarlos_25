@@ -37,3 +37,22 @@ test.describe("Smoke: Home page", () => {
     expect(response?.status()).toBe(404);
   });
 });
+
+test.describe("Theme default", () => {
+  test("opens in dark mode when no theme was chosen", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  });
+
+  test("keeps a stored light choice across reloads and navigation", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.evaluate(() => localStorage.setItem("theme", "light"));
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+    await page.goto("/projects/mcm");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  });
+});

@@ -119,6 +119,56 @@ test.describe("Home: cine-scroll direction 05", () => {
     expect(uncovered).toBe(true);
   });
 
+  test("covers a panel cleanly: the covered panel is not scaled or dimmed", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.5));
+    await page.waitForTimeout(300);
+
+    const covered = await page
+      .locator("[data-fx-panel]")
+      .first()
+      .evaluate((element) => {
+        const computed = getComputedStyle(element);
+
+        return { transform: computed.transform, filter: computed.filter };
+      });
+
+    expect(covered).toEqual({ transform: "none", filter: "none" });
+  });
+
+  test("animates with a calm fade only: no blur, movement or looping effects", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+
+    const hidden = await page
+      .locator("#proyectos [data-fx-reveal]")
+      .first()
+      .evaluate((element) => {
+        const computed = getComputedStyle(element);
+
+        return { transform: computed.transform, filter: computed.filter };
+      });
+
+    expect(hidden).toEqual({ transform: "none", filter: "none" });
+
+    const looping = await page.evaluate(
+      () =>
+        document
+          .getAnimations()
+          .filter(
+            (animation) =>
+              animation.effect?.getTiming().iterations === Infinity,
+          ).length,
+    );
+
+    expect(looping).toBe(0);
+  });
+
   test("lets panels scroll normally on narrow screens", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await openHome(page);

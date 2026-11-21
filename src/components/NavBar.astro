@@ -10,10 +10,7 @@ const navLinks = [
 
 <nav class="cine-nav">
   <div class="cine-nav-brand">
-    <a
-      href="/"
-      class="cine-pill cine-pill-brand"
-    >
+    <a href="/" class="cine-pill cine-pill-brand">
       <span>FGJCARLOS</span>
       <span class="cine-cursor" aria-hidden="true"></span>
     </a>
@@ -49,10 +46,10 @@ const navLinks = [
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <circle cx="24" cy="24" r="10" />
+      <circle cx="24" cy="24" r="10"></circle>
       <path
         d="M24 4v6M24 38v6M4 24h6M38 24h6M9.9 9.9l4.24 4.24M33.86 33.86l4.24 4.24M38.1 9.9l-4.24 4.24M14.14 33.86l-4.24 4.24"
-      />
+      ></path>
     </svg>
   </button>
 
@@ -90,10 +87,10 @@ const navLinks = [
     try {
       stored = localStorage.getItem("theme");
     } catch {
-      /* localStorage bloqueado: se queda en claro */
+      /* localStorage bloqueado: se queda en oscuro */
     }
     document.documentElement.dataset.theme =
-      stored === "dark" ? "dark" : "light";
+      stored === "light" ? "light" : "dark";
   };
 
   const bindThemeToggle = () => {
@@ -206,13 +203,6 @@ const navLinks = [
     height: 1em;
     background: var(--fx-ink-accent);
     display: inline-block;
-    animation: cine-blink 1.1s steps(1) infinite;
-  }
-
-  @keyframes cine-blink {
-    50% {
-      opacity: 0;
-    }
   }
 
   .cine-pill-links {
@@ -244,11 +234,5 @@ const navLinks = [
     padding: 0.5rem;
     width: 2.75rem;
     height: 2.75rem;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .cine-cursor {
-      animation: none;
-    }
   }
 </style>

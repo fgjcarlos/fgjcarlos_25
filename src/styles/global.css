@@ -108,7 +108,8 @@ html.theme-transition *::after {
     stroke 0.3s ease !important;
 }
 
-/* Icono del toggle: luna en claro (ir a oscuro), sol en oscuro (volver) */.theme-icon-sun {
+/* Icono del toggle: luna en claro (ir a oscuro), sol en oscuro (volver) */
+.theme-icon-sun {
   display: none;
 }
 
@@ -318,69 +319,21 @@ html.js .card-reveal.is-visible {
   --fx-ink-accent: var(--color-accent);
 }
 
-@keyframes fx-line-rise {
-  from {
-    transform: translateY(110%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-@keyframes fx-blur-rise {
+@keyframes fx-fade {
   from {
     opacity: 0;
-    transform: translateY(28px);
-    filter: blur(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-
-@keyframes fx-float {
-  from {
-    transform: translate(0, 0) scale(1);
-  }
-  to {
-    transform: translate(-6%, 10%) scale(1.12);
-  }
-}
-
-@keyframes fx-fall {
-  0%,
-  100% {
-    transform: scaleY(1);
-  }
-  50% {
-    transform: scaleY(0.4);
   }
 }
 
 /* Reveal: igual que el patrón `card-reveal`, sólo se oculta si hay JS. */
 html.js [data-fx-reveal] {
   opacity: 0;
-  transform: translateY(28px);
-  filter: blur(8px);
 }
 
 html.js [data-fx-reveal].is-visible {
-  animation: fx-blur-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: var(--reveal-delay, 0ms);
-}
-
-html.js [data-fx-line] {
-  overflow: hidden;
-}
-
-html.js [data-fx-line] > span {
-  display: inline-block;
-  transform: translateY(110%);
-}
-
-html.js [data-fx-line].is-visible > span {
-  animation: fx-line-rise 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fx-fade 0.6s ease-out forwards;
   animation-delay: var(--reveal-delay, 0ms);
 }

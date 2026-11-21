@@ -38,20 +38,21 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang="es" data-theme="light">
+<html lang="es" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <script is:inline>
       // Anti-FOUC: aplica el tema guardado antes del primer pintado.
-      // Por defecto claro; "js" habilita el reveal de tarjetas (fallback visible sin JS).
+      // Por defecto oscuro; "js" habilita el reveal de tarjetas (fallback visible sin JS).
       (() => {
         let stored = null;
         try {
           stored = localStorage.getItem("theme");
         } catch {
-          /* localStorage bloqueado: se queda en claro */
+          /* localStorage bloqueado: se queda en oscuro */
         }
-        document.documentElement.dataset.theme = stored === "dark" ? "dark" : "light";
+        document.documentElement.dataset.theme =
+          stored === "light" ? "light" : "dark";
         document.documentElement.classList.add("js");
       })();
     </script>

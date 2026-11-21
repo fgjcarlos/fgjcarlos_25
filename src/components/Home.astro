@@ -32,11 +32,9 @@ const year = new Date().getFullYear();
       <span class="cine-dot" aria-hidden="true"></span>
       IT/OT · IoT industrial · {year}
     </p>
-    <h1 class="cine-h1 cine-disp">
-      <span class="cine-line" data-fx-line><span>Carlos</span></span>
-      <span class="cine-line" data-fx-line style="--reveal-delay: 140ms"
-        ><span class="cine-grad">Fontán</span></span
-      >
+    <h1 class="cine-h1 cine-disp" data-fx-reveal>
+      <span class="cine-line">Carlos</span>
+      <span class="cine-line cine-grad">Fontán</span>
     </h1>
     <p class="cine-sub" data-fx-reveal style="--reveal-delay: 260ms">
       Software que conecta <b>la máquina con el navegador</b>: control
@@ -96,7 +94,7 @@ const year = new Date().getFullYear();
               data-fx-reveal
               style="--reveal-delay: 320ms"
             >
-              <a class="cine-caso" href={`/projects/${p.id}`} data-fx-magnet>
+              <a class="cine-caso" href={`/projects/${p.id}`}>
                 ver caso completo <span aria-hidden="true">→</span>
               </a>
               {p.data.github && (
@@ -104,18 +102,12 @@ const year = new Date().getFullYear();
                   href={p.data.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  data-fx-magnet
                 >
                   código <span aria-hidden="true">↗</span>
                 </a>
               )}
               {p.data.demo && (
-                <a
-                  href={p.data.demo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-fx-magnet
-                >
+                <a href={p.data.demo} target="_blank" rel="noopener noreferrer">
                   demo <span aria-hidden="true">↗</span>
                 </a>
               )}
@@ -132,18 +124,12 @@ const year = new Date().getFullYear();
 <div class="cine-grain" aria-hidden="true"></div>
 
 <script>
-  // «Cine de scroll»: los paneles son sticky; el siguiente se apila encima y el
-  // cubierto se encoge y atenúa según cuánto lo tapa el panel que entra.
-  const STACK_QUERY = "(min-width: 768px) and (min-height: 600px)";
-
+  // Fade suave al entrar en pantalla y barra de progreso del scroll.
   const initCine = () => {
+    const revealables = document.querySelectorAll("[data-fx-reveal]");
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-
-    const revealables = document.querySelectorAll(
-      "[data-fx-reveal], [data-fx-line]",
-    );
 
     if (!("IntersectionObserver" in window) || reduced) {
       revealables.forEach((el) => el.classList.add("is-visible"));
@@ -162,51 +148,16 @@ const year = new Date().getFullYear();
       revealables.forEach((el) => io.observe(el));
     }
 
-    if (reduced) return;
-
-    const panels = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-fx-panel]"),
-    );
-    const blobs = Array.from(
-      document.querySelectorAll<HTMLElement>(".cine-blob"),
-    );
     const progress = document.querySelector<HTMLElement>("[data-fx-progress]");
-    const stackMedia = window.matchMedia(STACK_QUERY);
+    if (!progress) return;
 
     let ticking = false;
-
     const render = () => {
       ticking = false;
-      const vh = window.innerHeight;
       const doc = document.documentElement;
-      const max = doc.scrollHeight - vh;
-
-      if (progress) {
-        progress.style.width = `${max > 0 ? (doc.scrollTop / max) * 100 : 0}%`;
-      }
-
-      panels.forEach((panel, i) => {
-        const next = panels[i + 1];
-        if (!next || !stackMedia.matches) {
-          panel.style.transform = "";
-          panel.style.filter = "";
-          return;
-        }
-        const top = next.getBoundingClientRect().top;
-        const t = Math.min(1, Math.max(0, 1 - top / vh));
-        panel.style.transform = `scale(${(1 - 0.07 * t).toFixed(4)}) translateY(${(-2.2 * t).toFixed(2)}vh)`;
-        panel.style.filter = `brightness(${(1 - 0.38 * t).toFixed(3)})`;
-      });
-
-      // `translate` y no `transform`: la animación de flotado ya usa transform.
-      blobs.forEach((blob) => {
-        const panel = blob.closest<HTMLElement>("[data-fx-panel]");
-        if (!panel) return;
-        const top = panel.getBoundingClientRect().top;
-        blob.style.translate = `0 ${(Math.max(-vh, Math.min(vh, top)) * -0.12).toFixed(1)}px`;
-      });
+      const max = doc.scrollHeight - window.innerHeight;
+      progress.style.width = `${max > 0 ? (doc.scrollTop / max) * 100 : 0}%`;
     };
-
     const onScroll = () => {
       if (!ticking) {
         ticking = true;
@@ -217,23 +168,6 @@ const year = new Date().getFullYear();
     render();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
-
-    // Enlaces magnéticos, solo con puntero fino.
-    if (window.matchMedia("(pointer: fine)").matches) {
-      document
-        .querySelectorAll<HTMLElement>("[data-fx-magnet]")
-        .forEach((link) => {
-          link.addEventListener("mousemove", (event) => {
-            const r = link.getBoundingClientRect();
-            const x = (event.clientX - r.x - r.width / 2) * 0.18;
-            const y = (event.clientY - r.y - r.height / 2) * 0.34;
-            link.style.transform = `translate(${x}px, ${y}px)`;
-          });
-          link.addEventListener("mouseleave", () => {
-            link.style.transform = "";
-          });
-        });
-    }
   };
 
   initCine();
@@ -274,8 +208,8 @@ const year = new Date().getFullYear();
       top: 0;
       height: 100vh;
       min-height: 0;
-      box-shadow: 0 -40px 80px oklch(0% 0 0 / 0.4);
-      will-change: transform, filter;
+      /* Borde limpio: sombra corta pegada al borde, sin escala ni atenuado. */
+      box-shadow: 0 -12px 24px -16px oklch(0% 0 0 / 0.5);
     }
   }
 
@@ -313,13 +247,6 @@ const year = new Date().getFullYear();
     border-radius: 50%;
     background: var(--fx-ink-accent);
     box-shadow: 0 0 12px var(--fx-ink-accent);
-    animation: fx-pulse 2.2s ease-in-out infinite;
-  }
-
-  @keyframes fx-pulse {
-    50% {
-      opacity: 0.4;
-    }
   }
 
   .cine-h1 {
@@ -337,23 +264,9 @@ const year = new Date().getFullYear();
 
   .cine-grad {
     background: var(--fx-grad);
-    background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-  }
-
-  html.js .cine-line.is-visible > .cine-grad {
-    animation:
-      fx-line-rise 1s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-      fx-sheen 7s 1.2s ease-in-out infinite alternate;
-    animation-delay: var(--reveal-delay, 0ms), 1.2s;
-  }
-
-  @keyframes fx-sheen {
-    to {
-      background-position: 100% 0;
-    }
   }
 
   .cine-sub {
@@ -384,8 +297,6 @@ const year = new Date().getFullYear();
     width: 1px;
     height: 2.1rem;
     background: linear-gradient(var(--fx-ink-accent), transparent);
-    transform-origin: top;
-    animation: fx-fall 1.6s ease-in-out infinite;
   }
 
   /* --- Proyectos --------------------------------------------------------- */
@@ -488,6 +399,8 @@ const year = new Date().getFullYear();
     z-index: -1;
     overflow: hidden;
     pointer-events: none;
+    /* Los blobs se desvanecen antes del borde: nada se corta en la unión. */
+    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
   }
 
   .cine-blob {
@@ -505,7 +418,6 @@ const year = new Date().getFullYear();
       oklch(72% 0.15 var(--blob-hue, var(--fx-h1))),
       transparent 65%
     );
-    animation: fx-float 14s ease-in-out infinite alternate;
   }
 
   .cine-blob-2 {
@@ -515,8 +427,6 @@ const year = new Date().getFullYear();
     width: 34vw;
     height: 34vw;
     opacity: 0.3;
-    animation-duration: 19s;
-    animation-direction: alternate-reverse;
   }
 
   [data-theme="dark"] .cine-blob {
@@ -569,17 +479,8 @@ const year = new Date().getFullYear();
     opacity: 0.07;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .cine-panel,
-    .cine-links a {
-      transform: none !important;
-      filter: none !important;
-    }
-
-    .cine-dot,
-    .cine-hint i,
-    .cine-blob {
-      animation: none;
-    }
+  /* La sombra lateral del <main> no tiene sentido con paneles a sangre. */
+  :global(main:has(.cine-home)) {
+    box-shadow: none;
   }
 </style>
