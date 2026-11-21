@@ -1,5 +1,11 @@
 ---
 import { getCollection } from "astro:content";
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import esp32Ui from "../assets/projects/esp32-iiot-kit-ui.webp";
+import lgbUi from "../assets/projects/lgb-ui.webp";
+import mcmUi from "../assets/projects/mcm-ui.webp";
+import nrccUi from "../assets/projects/nrcc-ui.webp";
 
 const projects = await getCollection("projects");
 const visible = projects
@@ -10,19 +16,39 @@ const visible = projects
     return b.data.publishDate.getTime() - a.data.publishDate.getTime();
   });
 
-// Dos blobs por panel; sus tonos recorren la paleta como en el artboard 05.
-const blobTones = [
-  ["var(--fx-h1)", "var(--fx-h2)"],
-  ["var(--fx-h3)", "var(--fx-h2)"],
-  ["var(--fx-h2)", "var(--fx-h1)"],
-  ["var(--fx-h1)", "var(--fx-h3)"],
-];
+// Recorte de la UI real de cada proyecto, por slug. Los alt cuentan qué se
+// ve en la captura: son la evidencia de la interfaz, no decoración.
+const uiShots: Record<string, { src: ImageMetadata; alt: string }> = {
+  lgb: {
+    src: lgbUi,
+    alt: "Arquitectura de LGB: la interfaz web en React habla por REST y WebSocket con el núcleo en Go, que traduce a PLCs Rockwell, OPC UA, MQTT y copias de seguridad.",
+  },
+  mcm: {
+    src: mcmUi,
+    alt: "Panel de control de MCM en marcha: estado del broker Mosquitto, mensajes observados y topics más activos.",
+  },
+  nrcc: {
+    src: nrccUi,
+    alt: "Tabla de estado del plano de control de NRCC en su sitio de demostración: nueve sub-clústeres del roadmap con su estado.",
+  },
+  "esp32-iiot-kit": {
+    src: esp32Ui,
+    alt: "Pantalla TFT del gateway ESP32 (simulación de diseño): lista de nodos con la humedad y la edad de la muestra.",
+  },
+};
 
 const year = new Date().getFullYear();
 ---
 
-<div id="sobre-mi" class="cine-home">
-  <section class="cine-panel cine-hero" aria-label="Presentación" data-fx-panel>
+<div class="cine-home">
+  <!-- El ancla "Sobre mí" apunta al hero (no a un contenedor que lo envuelve):
+       el hero es texto puro, sin fotos, y las capturas viven en los paneles. -->
+  <section
+    id="sobre-mi"
+    class="cine-panel cine-hero"
+    aria-label="Presentación"
+    data-fx-panel
+  >
     <p class="cine-badge">
       <span class="cine-dot" aria-hidden="true"></span>
       IT/OT · IoT industrial · {year}
@@ -42,71 +68,89 @@ const year = new Date().getFullYear();
   <section id="proyectos" aria-label="Proyectos">
     {
       visible.map((p, i) => {
-        const [hue, hue2] = blobTones[i % blobTones.length];
+        const shot = uiShots[p.id];
         return (
           <article
             class="cine-panel cine-project"
             aria-label={`Proyecto ${p.data.title}`}
             data-fx-panel
           >
-            <div class="cine-art" aria-hidden="true">
-              <div class="cine-blob" style={`--blob-hue: ${hue}`} />
+            <div class="cine-copy">
+              <div class="cine-head" data-fx-reveal>
+                <span
+                  class="cine-number cine-disp"
+                  data-num={String(i + 1).padStart(2, "0")}
+                  aria-hidden="true"
+                />
+                {p.data.status && (
+                  <span class:list={["cine-status", { hot: p.data.featured }]}>
+                    <span>{p.data.status}</span>
+                    {p.data.featured && " · destacado"}
+                  </span>
+                )}
+              </div>
+              <h2
+                class="cine-h2 cine-disp"
+                data-fx-reveal
+                style="--reveal-delay: 80ms"
+              >
+                {p.data.title}
+              </h2>
+              <p class="cine-desc" data-fx-reveal style="--reveal-delay: 160ms">
+                {p.data.description}
+              </p>
               <div
-                class="cine-blob cine-blob-2"
-                style={`--blob-hue: ${hue2}`}
-              />
-            </div>
-            <div class="cine-head" data-fx-reveal>
-              <span
-                class="cine-number cine-disp"
-                data-num={String(i + 1).padStart(2, "0")}
-                aria-hidden="true"
-              />
-              {p.data.status && (
-                <span class:list={["cine-status", { hot: p.data.featured }]}>
-                  <span>{p.data.status}</span>
-                  {p.data.featured && " · destacado"}
-                </span>
-              )}
-            </div>
-            <h2
-              class="cine-h2 cine-disp"
-              data-fx-reveal
-              style="--reveal-delay: 80ms"
-            >
-              {p.data.title}
-            </h2>
-            <p class="cine-desc" data-fx-reveal style="--reveal-delay: 160ms">
-              {p.data.description}
-            </p>
-            <div class="cine-tags" data-fx-reveal style="--reveal-delay: 240ms">
-              {p.data.tags.map((tag) => (
-                <span>{tag}</span>
-              ))}
-            </div>
-            <div
-              class="cine-links"
-              data-fx-reveal
-              style="--reveal-delay: 320ms"
-            >
-              <a class="cine-caso" href={`/projects/${p.id}`}>
-                ver caso completo <span aria-hidden="true">→</span>
-              </a>
-              {p.data.github && (
-                <a
-                  href={p.data.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  código <span aria-hidden="true">↗</span>
+                class="cine-tags"
+                data-fx-reveal
+                style="--reveal-delay: 240ms"
+              >
+                {p.data.tags.map((tag) => (
+                  <span>{tag}</span>
+                ))}
+              </div>
+              <div
+                class="cine-links"
+                data-fx-reveal
+                style="--reveal-delay: 320ms"
+              >
+                <a class="cine-caso" href={`/projects/${p.id}`}>
+                  ver caso completo <span aria-hidden="true">→</span>
                 </a>
-              )}
-              {p.data.demo && (
-                <a href={p.data.demo} target="_blank" rel="noopener noreferrer">
-                  demo <span aria-hidden="true">↗</span>
-                </a>
-              )}
+                {p.data.github && (
+                  <a
+                    href={p.data.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    código <span aria-hidden="true">↗</span>
+                  </a>
+                )}
+                {p.data.demo && (
+                  <a
+                    href={p.data.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    demo <span aria-hidden="true">↗</span>
+                  </a>
+                )}
+              </div>
             </div>
+            {shot && (
+              <figure
+                class="cine-shot"
+                data-fx-reveal
+                style="--reveal-delay: 200ms"
+              >
+                <Image
+                  src={shot.src}
+                  alt={shot.alt}
+                  widths={[320, 480, 640, 1000]}
+                  sizes="(min-width: 768px) 40vw, 92vw"
+                  loading={i === 0 ? "eager" : "lazy"}
+                />
+              </figure>
+            )}
           </article>
         );
       })
@@ -169,6 +213,43 @@ const year = new Date().getFullYear();
       }
     });
 
+    // El hero es sticky: el router y el navegador lo ven siempre pegado
+    // arriba y no mueven la página al pulsar "Sobre mí". Se scrollea a la
+    // posición natural del panel al que apunta el ancla.
+    if (!document.documentElement.dataset.cineAnchorBound) {
+      document.documentElement.dataset.cineAnchorBound = "true";
+      const scrollToAnchor = (id: string) => {
+        const anchor = document.getElementById(id);
+        const panel = anchor?.closest<HTMLElement>("[data-fx-panel]");
+        if (!panel) return;
+        const all = Array.from(
+          document.querySelectorAll<HTMLElement>("[data-fx-panel]"),
+        );
+        const index = all.indexOf(panel);
+        const root = document.querySelector<HTMLElement>(".cine-home");
+        if (index < 0 || !root) return;
+        const top =
+          root.getBoundingClientRect().top +
+          window.scrollY +
+          index * window.innerHeight;
+        if (Math.abs(window.scrollY - top) > 1) {
+          window.scrollTo({ top, behavior: "instant" });
+        }
+      };
+      document.addEventListener("click", (event) => {
+        const href = (event.target as Element | null)
+          ?.closest("a")
+          ?.getAttribute("href");
+        if (!href?.includes("#")) return;
+        const id = decodeURIComponent(href.slice(href.indexOf("#") + 1));
+        // Tras el scroll del router, que no mueve un panel sticky.
+        requestAnimationFrame(() => scrollToAnchor(id));
+      });
+      window.addEventListener("hashchange", () =>
+        scrollToAnchor(decodeURIComponent(location.hash.slice(1))),
+      );
+    }
+
     // Al llegar desde otra página con /#ancla, el router scrollea antes de que
     // los estilos de la home den su altura a los paneles: el ancla se re-fija
     // mientras la maqueta cambia de tamaño, hasta que la persona scrollee.
@@ -221,12 +302,13 @@ const year = new Date().getFullYear();
 
   /* Las anclas caen justo en el borde: los paneles ya dejan sitio al nav
      flotante con su padding, y el hero sticky no sirve como destino (el
-     navegador lo ve siempre arriba), por eso #sobre-mi es el contenedor. */
+     navegador lo ve siempre arriba), por eso el ancla vive en el hero. */
   :global(html:has(.cine-home)) {
     scroll-padding-top: 0;
   }
 
   .cine-home,
+  #sobre-mi,
   #proyectos {
     scroll-margin-top: 0;
   }
@@ -239,7 +321,6 @@ const year = new Date().getFullYear();
     min-height: 100svh;
     padding: 6rem 7vw 3rem;
     overflow: hidden;
-    isolation: isolate; /* los blobs (z-index -1) quedan sobre el fondo del panel */
     background-color: var(--color-base-100);
     transform-origin: top center;
   }
@@ -254,10 +335,6 @@ const year = new Date().getFullYear();
       /* Borde limpio: sombra corta pegada al borde, sin escala ni atenuado. */
       box-shadow: 0 -12px 24px -16px oklch(0% 0 0 / 0.5);
     }
-  }
-
-  .cine-project {
-    border-top: 1px solid var(--color-base-300);
   }
 
   .cine-disp {
@@ -350,6 +427,50 @@ const year = new Date().getFullYear();
   }
 
   /* --- Proyectos --------------------------------------------------------- */
+  .cine-project {
+    border-top: 1px solid var(--color-base-300);
+    /* Columna de texto y columna de la captura; en pantallas estrechas la
+       captura cae debajo del texto. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.25rem;
+    align-content: center;
+  }
+
+  @media (min-width: 768px) and (min-height: 600px) {
+    .cine-project {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 40%);
+      gap: 3.5rem;
+      align-items: center;
+    }
+  }
+
+  /* Marco de la captura: radio real, borde de la paleta y sombra con
+     desplazamiento (sin halo de color en el origen). */
+  .cine-shot {
+    margin: 0;
+    border: 1px solid var(--color-base-300);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--color-base-200);
+    box-shadow: 0 20px 38px -24px oklch(0% 0 0 / 0.6);
+  }
+
+  .cine-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 45svh;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* En oscuro llegan cuatro paletas de producto distintas: una desaturación
+     suave las acerca al teal de la marca sin apagar la captura. */
+  :global([data-theme="dark"]) .cine-shot img {
+    filter: saturate(0.85);
+  }
+
   .cine-head {
     display: flex;
     align-items: baseline;
@@ -447,52 +568,6 @@ const year = new Date().getFullYear();
   }
 
   /* --- Decoración -------------------------------------------------------- */
-  .cine-art {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-    /* En claro los blobs no se pintan: son glow de color sobre el papel. */
-    display: none;
-    /* Los blobs se desvanecen antes del borde: nada se corta en la unión. */
-    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
-  }
-
-  :global([data-theme="dark"]) .cine-art {
-    display: block;
-  }
-
-  .cine-blob {
-    position: absolute;
-    top: -18vw;
-    right: -14vw;
-    width: 56vw;
-    height: 56vw;
-    border-radius: 50%;
-    filter: blur(70px);
-    opacity: 0.5;
-    mix-blend-mode: multiply;
-    background: radial-gradient(
-      circle at 35% 35%,
-      oklch(72% 0.15 var(--blob-hue, var(--fx-h1))),
-      transparent 65%
-    );
-  }
-
-  .cine-blob-2 {
-    top: auto;
-    right: 24vw;
-    bottom: -16vw;
-    width: 34vw;
-    height: 34vw;
-    opacity: 0.3;
-  }
-
-  [data-theme="dark"] .cine-blob {
-    mix-blend-mode: screen;
-  }
-
   .cine-progress {
     position: fixed;
     top: 0;

@@ -99,14 +99,21 @@ test.describe("Light theme: technical daylight", () => {
   });
 });
 
-test("keeps the dark theme decoration", async ({ page }) => {
+// T2 (S3) sustituyó los blobs decorativos por capturas de la UI real de cada
+// proyecto: la decoración del tema oscuro ahora son esas capturas.
+test("keeps the dark theme project screenshots", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  const blobs = await page
-    .locator(".cine-blob")
-    .evaluateAll(
-      (elements) =>
-        elements.filter((e) => e.getBoundingClientRect().width > 0).length,
-    );
-  expect(blobs).toBeGreaterThan(0);
+
+  const shots = page.locator("article.cine-project img");
+  await expect(shots).toHaveCount(4);
+
+  for (let i = 0; i < 4; i++) {
+    const shot = shots.nth(i);
+    await expect(shot).toHaveAttribute("alt", /\S/);
+    await shot.scrollIntoViewIfNeeded();
+    expect(
+      await shot.evaluate((el) => (el as HTMLImageElement).naturalWidth),
+    ).toBeGreaterThan(0);
+  }
 });
