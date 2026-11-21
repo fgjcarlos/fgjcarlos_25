@@ -7,18 +7,19 @@
   default: false;
   prefersdark: false;
   color-scheme: "light";
-  /* Neutro cálido (papel/tinta): el sitio usa mono LXGW WenKai y acento
-     teal; el tinte índigo por defecto de daisyUI no acompaña a esa voz. */
-  --color-base-100: oklch(99.3% 0.003 80);
-  --color-base-200: oklch(96.4% 0.006 80);
-  --color-base-300: oklch(92% 0.008 80);
-  --color-base-content: oklch(22% 0.014 60);
+  /* Luz técnica: papel cálido, tinta casi negra y un único teal sobrio.
+     El papel ya no es blanco (para que se lea como papel) y el acento deja de
+     ser neón: el teal oscuro (`accent-content`) es la tinta de color. */
+  --color-base-100: oklch(97% 0.012 75);
+  --color-base-200: oklch(94% 0.014 75);
+  --color-base-300: oklch(89.5% 0.016 75);
+  --color-base-content: oklch(20% 0.012 60);
   --color-primary: oklch(23% 0.014 60);
   --color-primary-content: oklch(97% 0.006 80);
   --color-secondary: oklch(95% 0.008 80);
   --color-secondary-content: oklch(24% 0.014 60);
-  --color-accent: oklch(77% 0.152 181.912);
-  --color-accent-content: oklch(38% 0.063 188.416);
+  --color-accent: oklch(70% 0.11 184);
+  --color-accent-content: oklch(34% 0.058 188.416);
   --color-neutral: oklch(44% 0.014 60);
   --color-neutral-content: oklch(98% 0.004 80);
   --color-info: oklch(90% 0.058 230.902);
@@ -131,8 +132,10 @@ html.theme-transition *::after {
   );
 }
 
+/* Anillo de foco: la tinta de acento de cada tema (teal oscuro en claro,
+   teal brillante en oscuro). Con `accent` fijo era 1.87:1 sobre el papel. */
 *:focus-visible {
-  outline: 2px solid oklch(77% 0.152 181.912);
+  outline: 2px solid var(--fx-ink-accent);
   outline-offset: 2px;
 }
 
@@ -294,15 +297,15 @@ html.js .card-reveal.is-visible {
    Dirección 05 «cine de scroll» (home).
 
    Los acentos del sitio siguen siendo los de daisyUI (teal, hue ~183): esta
-   paleta solo aporta el gradiente y los tonos de los blobs decorativos. El
-   gradiente se usa en elementos decorativos (barra de progreso, blobs, CTA),
-   nunca en texto plano, para no perder contraste AA.
+   paleta solo aporta el gradiente y los tonos de los blobs decorativos. En
+   claro el gradiente baja de luminosidad para mantener ≥4.5:1 sobre el papel
+   (en oscuro sube para brillar sobre el grafito).
 --------------------------------------------------------------------------- */
 :root {
   --fx-h1: 182; /* teal */
   --fx-h2: 230; /* cian */
   --fx-h3: 296; /* violeta */
-  --fx-l: 60%; /* lightness del gradiente en tema claro */
+  --fx-l: 46%; /* lightness del gradiente en tema claro (≥4.5:1 sobre papel) */
   --fx-grad: linear-gradient(
     92deg,
     oklch(var(--fx-l) 0.14 var(--fx-h1)),

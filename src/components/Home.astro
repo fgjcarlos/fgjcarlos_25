@@ -289,6 +289,13 @@ const year = new Date().getFullYear();
     height: 0.5rem;
     border-radius: 50%;
     background: var(--fx-ink-accent);
+    /* En claro el punto es tinta: sin halo, que sobre papel solo ensucia. */
+    box-shadow: none;
+  }
+
+  /* `:global` saca la regla del scope de Astro: si no, el <html> tendría que
+     llevar el atributo de scope y la regla no aplicaría nunca. */
+  :global([data-theme="dark"]) .cine-dot {
     box-shadow: 0 0 12px var(--fx-ink-accent);
   }
 
@@ -427,6 +434,10 @@ const year = new Date().getFullYear();
       color-mix(in oklch, var(--fx-ink-accent) 55%, var(--color-base-300));
     border-radius: 9999px;
     padding: 0.6rem 1.25rem;
+    box-shadow: none;
+  }
+
+  :global([data-theme="dark"]) .cine-links a.cine-caso {
     box-shadow: 0 0 44px oklch(var(--fx-l) 0.14 var(--fx-h1) / 0.3);
   }
 
@@ -442,8 +453,14 @@ const year = new Date().getFullYear();
     z-index: -1;
     overflow: hidden;
     pointer-events: none;
+    /* En claro los blobs no se pintan: son glow de color sobre el papel. */
+    display: none;
     /* Los blobs se desvanecen antes del borde: nada se corta en la unión. */
     mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+  }
+
+  :global([data-theme="dark"]) .cine-art {
+    display: block;
   }
 
   .cine-blob {
@@ -485,9 +502,14 @@ const year = new Date().getFullYear();
     width: 0;
     border-radius: 0 9999px 9999px 0;
     background: var(--fx-grad);
+    box-shadow: none;
+  }
+
+  :global([data-theme="dark"]) .cine-progress {
     box-shadow: 0 0 14px oklch(var(--fx-l) 0.14 var(--fx-h1) / 0.8);
   }
 
+  /* Viñeta de papel: en claro es una sombra cálima, no un tinte azul. */
   .cine-vignette {
     position: fixed;
     inset: 0;
@@ -496,15 +518,16 @@ const year = new Date().getFullYear();
     background: radial-gradient(
       130% 100% at 50% 0%,
       transparent 55%,
-      oklch(20% 0.02 262 / 0.12)
+      oklch(30% 0.012 70 / 0.1)
     );
   }
 
-  [data-theme="dark"] .cine-vignette {
+  /* La viñeta de hoy es la del tema oscuro: se conserva tal cual. */
+  :global([data-theme="dark"]) .cine-vignette {
     background: radial-gradient(
       130% 100% at 50% 0%,
       transparent 55%,
-      oklch(0% 0 0 / 0.3)
+      oklch(20% 0.02 262 / 0.12)
     );
   }
 
