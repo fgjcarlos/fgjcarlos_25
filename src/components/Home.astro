@@ -169,6 +169,24 @@ const year = new Date().getFullYear();
       }
     });
 
+    // Al llegar desde otra página con /#ancla, el router scrollea antes de que
+    // los estilos de la home den su altura a los paneles: el ancla se re-fija
+    // mientras la maqueta cambia de tamaño, hasta que la persona scrollee.
+    const target = location.hash
+      ? document.getElementById(decodeURIComponent(location.hash.slice(1)))
+      : null;
+    if (target && home) {
+      const pin = new ResizeObserver(() =>
+        target.scrollIntoView({ behavior: "instant" }),
+      );
+      const release = () => pin.disconnect();
+      pin.observe(home);
+      window.setTimeout(release, 1500);
+      for (const type of ["wheel", "touchstart", "keydown"]) {
+        window.addEventListener(type, release, { once: true, passive: true });
+      }
+    }
+
     const progress = document.querySelector<HTMLElement>("[data-fx-progress]");
     if (!progress) return;
 

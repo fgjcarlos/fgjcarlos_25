@@ -20,7 +20,7 @@ test.describe("Smoke: Home page", () => {
 
   test("navbar anchor links are present", async ({ page }) => {
     await page.goto("/");
-    const sobreMiLink = page.locator('a[href="#sobre-mi"]').first();
+    const sobreMiLink = page.locator('a[href="/#sobre-mi"]').first();
     await expect(sobreMiLink).toBeVisible();
   });
 

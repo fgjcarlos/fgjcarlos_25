@@ -67,4 +67,35 @@ test.describe("Anchor section navigation", () => {
 
     await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
   });
+
+  test("takes the nav links from a project page to the home sections", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+
+    await page.goto("/projects/mcm");
+    await page
+      .getByRole("navigation")
+      .getByRole("link", { name: "Proyectos" })
+      .click();
+    await page.waitForURL(/\/#proyectos$/);
+    await expect
+      .poll(() =>
+        page
+          .locator("#proyectos")
+          .evaluate((element) =>
+            Math.round(element.getBoundingClientRect().top),
+          ),
+      )
+      .toBe(0);
+
+    await page.goto("/projects/mcm");
+    await page
+      .getByRole("navigation")
+      .getByRole("link", { name: "Sobre mí" })
+      .click();
+    await page.waitForURL(/\/#sobre-mi$/);
+    await expect(page.locator("section.cine-hero h1")).toBeInViewport();
+  });
 });
