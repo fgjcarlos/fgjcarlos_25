@@ -7,10 +7,6 @@ import Links from "@config/links.json";
 import profile from "@config/profile.json";
 import { focusAreas } from "@config/focusAreas";
 import type { BioSegment, LinksConfig, ProfileConfig } from "../types/config";
-import esp32Ui from "../assets/projects/esp32-iiot-kit-ui.webp";
-import lgbUi from "../assets/projects/lgb-ui.webp";
-import mcmUi from "../assets/projects/mcm-ui.webp";
-import nrccUi from "../assets/projects/nrcc-ui.webp";
 
 const projects = await getCollection("projects");
 // Los paneles se ordenan por fecha, del más reciente al más antiguo: el
@@ -19,26 +15,19 @@ const visible = projects
   .filter((p) => !p.data.draft)
   .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
 
-// Recorte de la UI real de cada proyecto, por slug. Los alt cuentan qué se
-// ve en la captura: son la evidencia de la interfaz, no decoración.
-const uiShots: Record<string, { src: ImageMetadata; alt: string }> = {
-  lgb: {
-    src: lgbUi,
-    alt: "Arquitectura de LGB: la interfaz web en React habla por REST y WebSocket con el núcleo en Go, que traduce a PLCs Rockwell, OPC UA, MQTT y copias de seguridad.",
-  },
-  mcm: {
-    src: mcmUi,
-    alt: "Panel de control de MCM en marcha: estado del broker Mosquitto, mensajes observados y topics más activos.",
-  },
-  nrcc: {
-    src: nrccUi,
-    alt: "Tabla de estado del plano de control de NRCC en su sitio de demostración: nueve sub-clústeres del roadmap con su estado.",
-  },
-  "esp32-iiot-kit": {
-    src: esp32Ui,
-    alt: "Pantalla TFT del gateway ESP32 (simulación de diseño): lista de nodos con la humedad y la edad de la muestra.",
-  },
-};
+// Captura de la UI de cada proyecto: la aporta el usuario. Para que un
+// panel muestre una imagen, deja el archivo en `src/assets/projects/` con el
+// nombre `<slug>-ui.webp` (16:10, ~1600 px de ancho máximo). Sin archivo, el
+// panel es solo texto.
+const shotModules = import.meta.glob<ImageMetadata>(
+  "../assets/projects/*-ui.{webp,png,jpg,jpeg,avif}",
+  { eager: true, import: "default" },
+);
+const shotsBySlug: Record<string, ImageMetadata> = {};
+for (const [path, shot] of Object.entries(shotModules)) {
+  const file = path.split("/").pop() ?? "";
+  shotsBySlug[file.replace(/-ui\.[^.]+$/, "")] = shot;
+}
 
 // El posicionamiento del panel "Sobre mí" es el primer párrafo de la bio de
 // `profile.json`, palabra por palabra: no se inventa ninguna afirmación.
@@ -140,7 +129,7 @@ const otherLinks = contactLinks.filter(
   <section id="proyectos" aria-label="Proyectos">
     {
       visible.map((p, i) => {
-        const shot = uiShots[p.id];
+        const shot = shotsBySlug[p.id];
         return (
           <article
             class="cine-panel cine-project"
@@ -231,8 +220,8 @@ const otherLinks = contactLinks.filter(
                 style="--reveal-delay: 200ms"
               >
                 <Image
-                  src={shot.src}
-                  alt={shot.alt}
+                  src={shot}
+                  alt={`Captura de la interfaz de ${p.data.title}`}
                   widths={[320, 480, 640, 1000]}
                   sizes="(min-width: 768px) 40vw, 92vw"
                   loading={i === 0 ? "eager" : "lazy"}

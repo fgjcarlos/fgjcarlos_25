@@ -110,23 +110,17 @@ test.describe("Light theme: technical daylight", () => {
   });
 });
 
-// T2 (S3) sustituyó los blobs decorativos por capturas de la UI real de cada
-// proyecto: la decoración del tema oscuro ahora son esas capturas.
-test("keeps the dark theme project screenshots", async ({ page }) => {
+// T7 (S3): el usuario quitó las capturas (aportará las suyas). En oscuro los
+// paneles son texto: ni marcos vacíos ni imágenes que cargar.
+test("keeps the dark theme panels without project screenshots", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => localStorage.setItem("theme", "dark"));
   await page.goto("/");
 
-  const shots = page.locator("article.cine-project img");
-  await expect(shots).toHaveCount(4);
-
-  for (let i = 0; i < 4; i++) {
-    const shot = shots.nth(i);
-    await expect(shot).toHaveAttribute("alt", /\S/);
-    await shot.scrollIntoViewIfNeeded();
-    expect(
-      await shot.evaluate((el) => (el as HTMLImageElement).naturalWidth),
-    ).toBeGreaterThan(0);
-  }
+  await expect(page.locator("article.cine-project img")).toHaveCount(0);
+  await expect(page.locator(".cine-shot")).toHaveCount(0);
 });
 
 // S7: en oscuro el CTA de cada panel no lleva halo de color sin

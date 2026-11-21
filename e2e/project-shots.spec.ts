@@ -36,78 +36,57 @@ async function settle(page: Page): Promise<void> {
   });
 }
 
-test.describe("Home: capturas de la UI real de cada proyecto", () => {
-  test("cada panel muestra su captura a la derecha del titular, cargada y sin blobs", async ({
-    page,
-  }) => {
+test.describe("Home: paneles de proyecto sin capturas", () => {
+  test("sin capturas, ningún panel pinta marco ni imagen", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openHome(page);
 
     const panels = page.locator("article.cine-project");
     await expect(panels).toHaveCount(4);
 
-    for (let i = 0; i < 4; i++) {
-      const panel = panels.nth(i);
-      await panel.scrollIntoViewIfNeeded();
-
-      const image = panel.locator("img");
-      await expect(image).toHaveCount(1);
-
-      const alt = await image.getAttribute("alt");
-      expect(
-        alt?.trim(),
-        "la captura necesita un alt descriptivo",
-      ).toBeTruthy();
-
-      // La imagen llega a cargarse (naturalWidth > 0).
-      await expect
-        .poll(
-          () => image.evaluate((el) => (el as HTMLImageElement).naturalWidth),
-          { timeout: 10_000 },
-        )
-        .toBeGreaterThan(0);
-
-      const box = (await image.boundingBox())!;
-      const title = (await panel.locator("h2").boundingBox())!;
-
-      // La captura vive en la columna derecha, sin solaparse con el titular.
-      expect(box.x).toBeGreaterThan(title.x);
-      expect(
-        box.x >= title.x + title.width - 1,
-        "la captura no debe pisar el titular",
-      ).toBe(true);
-      expect(box.x + box.width).toBeLessThanOrEqual(1440);
-    }
+    // El usuario retiró las capturas: los paneles son texto hasta que
+    // aporte las suyas en `src/assets/projects/<slug>-ui.*`.
+    await expect(page.locator(".cine-shot")).toHaveCount(0);
+    await expect(page.locator("article.cine-project img")).toHaveCount(0);
   });
 
-  test("en móvil la captura no desborda y cabe en el ancho del panel", async ({
+  test("la columna de texto no se mueve al faltar la captura", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
+    await page.setViewportSize({ width: 1440, height: 900 });
     await openHome(page);
 
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - window.innerWidth,
-    );
-    expect(overflow, "sin desbordamiento horizontal").toBeLessThanOrEqual(0);
+    const panel = page.locator("article.cine-project").first();
+    await panel.scrollIntoViewIfNeeded();
 
-    const panels = page.locator("article.cine-project");
-    await expect(panels).toHaveCount(4);
+    const panelBox = (await panel.boundingBox())!;
+    const copyBox = (await panel.locator(".cine-copy").boundingBox())!;
+    const titleBox = (await panel.locator("h2").boundingBox())!;
 
-    for (let i = 0; i < 4; i++) {
-      const panel = panels.nth(i);
-      await panel.scrollIntoViewIfNeeded();
+    // El titular sigue pegado al padding del panel (7vw), igual que cuando
+    // había captura: la columna de texto no cambia de ancho ni de posición.
+    expect(Math.abs(titleBox.x - copyBox.x)).toBeLessThanOrEqual(1);
+    expect(
+      Math.abs(titleBox.x - (panelBox.x + 1440 * 0.07)),
+      "el h2 no se desplaza",
+    ).toBeLessThanOrEqual(2);
+  });
 
-      const image = panel.locator("img");
-      await expect(image).toHaveCount(1);
+  test("no desborda en horizontal a 1440 ni a 390", async ({ page }) => {
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({
+        width,
+        height: width === 390 ? 844 : 900,
+      });
+      await openHome(page);
 
-      const panelBox = (await panel.boundingBox())!;
-      const imageBox = (await image.boundingBox())!;
-      expect(imageBox.width).toBeLessThanOrEqual(panelBox.width);
-      expect(imageBox.x).toBeGreaterThanOrEqual(panelBox.x - 1);
-      expect(imageBox.x + imageBox.width).toBeLessThanOrEqual(
-        panelBox.x + panelBox.width + 1,
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
       );
+      expect(
+        overflow,
+        `sin desbordamiento horizontal a ${width}`,
+      ).toBeLessThanOrEqual(0);
     }
   });
 
