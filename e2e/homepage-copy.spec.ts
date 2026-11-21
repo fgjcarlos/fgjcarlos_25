@@ -247,16 +247,13 @@ test.describe("Home: project summaries", () => {
       ).toHaveCount(1);
 
       const repo = card.getByRole("link", { name: "código" });
-      const demo = card.getByRole("link", { name: "Demo" });
+      const demo = card.getByRole("link", { name: /demo/i });
 
       await expect(repo, `repo link of ${project.title}`).toHaveAttribute(
         "href",
         project.repo,
       );
-      await expect(demo, `demo link of ${project.title}`).toHaveAttribute(
-        "href",
-        project.demo,
-      );
+      await expect(demo, `no demo link on ${project.title}`).toHaveCount(0);
     }
   });
 });

@@ -131,8 +131,8 @@ test.describe("Home: focus and rhythm", () => {
     // trae a la vista y lo deja pegado al borde superior, donde lo tapa la
     // barra flotante.
     const last = page.locator("#proyectos article").last();
-    const previous = last.getByRole("link", { name: "código" });
-    const target = last.getByRole("link", { name: "demo" });
+    const previous = last.getByRole("link", { name: /ver caso completo/ });
+    const target = last.getByRole("link", { name: "código" });
 
     await previous.focus();
     // El enlace queda asomando por encima del borde: el foco tiene que

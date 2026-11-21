@@ -92,38 +92,11 @@ test.describe("Full-width shell", () => {
   });
 });
 
-test("keeps the project demo button readable in the default dark theme", async ({
+test("offers the repository but no demo button on a project page", async ({
   page,
 }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/projects/mcm");
 
-  const demo = page.getByRole("link", { name: "Ver demo" });
-  await expect(demo).toBeVisible();
-
-  // axe leaves oklch() colours as "incomplete", so the ratio is computed here:
-  // the canvas resolves any CSS colour to sRGB.
-  const ratio = await demo.evaluate((element) => {
-    const style = getComputedStyle(element);
-    const ctx = document.createElement("canvas").getContext("2d")!;
-    const luminance = (color: string) => {
-      ctx.clearRect(0, 0, 1, 1);
-      ctx.fillStyle = color;
-      ctx.fillRect(0, 0, 1, 1);
-      const [r, g, b] = Array.from(ctx.getImageData(0, 0, 1, 1).data)
-        .slice(0, 3)
-        .map((v) => {
-          const c = v / 255;
-          return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-        });
-      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-    };
-    const [hi, lo] = [
-      luminance(style.color),
-      luminance(style.backgroundColor),
-    ].sort((x, y) => y - x);
-    return (hi + 0.05) / (lo + 0.05);
-  });
-
-  expect(ratio).toBeGreaterThanOrEqual(4.5);
+  await expect(page.getByRole("link", { name: "Repositorio" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Ver demo" })).toHaveCount(0);
 });
